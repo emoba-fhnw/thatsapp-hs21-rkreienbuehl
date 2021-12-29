@@ -45,7 +45,8 @@ dependencies {
 
     implementation "androidx.compose.ui:ui-tooling:$compose_version"
 
-    implementation 'androidx.activity:activity-compose:1.4.0-alpha01'
+    implementation 'androidx.activity:activity-compose:1.4.0'
+    implementation 'androidx.fragment:fragment-ktx:1.4.0'
 
     // the compose libraries
     implementation "androidx.compose.material:material:$compose_version"
@@ -54,6 +55,9 @@ dependencies {
 
     // fuer den Layout Inspector
     implementation 'org.jetbrains.kotlin:kotlin-reflect:1.5.30'
+
+    implementation 'com.hivemq:hivemq-mqtt-client:1.2.2'
+    implementation 'com.google.android.gms:play-services-location:19.0.0'
 
 
     testImplementation 'junit:junit:4.13.2'
