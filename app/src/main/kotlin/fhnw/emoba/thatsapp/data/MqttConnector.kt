@@ -3,6 +3,8 @@ package fhnw.emoba.thatsapp.data
 import com.hivemq.client.mqtt.datatypes.MqttQos
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish
+import fhnw.emoba.thatsapp.data.messages.*
+import org.json.JSONObject
 import java.nio.charset.StandardCharsets
 import java.util.*
 
@@ -30,7 +32,8 @@ class MqttConnector (val mqttBroker: String,
         .buildAsync()
     
     fun connectAndSubscribe(subtopic:           String = "",
-                            onNewMessage:       (String) -> Unit = {},
+                            onNewMessage:       (Message) -> Unit = {},
+                            onError:      (Exception) -> Unit,
                             onConnectionFailed: () -> Unit = {}) {
         client.connectWith()
             .cleanStart(true)
@@ -39,31 +42,41 @@ class MqttConnector (val mqttBroker: String,
             .whenComplete { _, throwable ->
                 if (throwable != null) {
                     onConnectionFailed.invoke()
-                } else { //erst wenn die Connection aufgebaut ist, kann subscribed werden
-                    subscribe(subtopic, onNewMessage)
+                } else {
+                    subscribe(subtopic, onNewMessage, onError)
                 }
             }
     }
 
     fun subscribe(subtopic:     String = "",
-                  onNewMessage: (String) -> Unit){
+                  onNewMessage: (Message) -> Unit,
+                  onError:      (Exception) -> Unit,
+    ){
         client.subscribeWith()
             .topicFilter(maintopic + subtopic)
             .qos(qos)
             .noLocal(true)
-            .callback { onNewMessage.invoke(it.payloadAsString()) }
+            .callback {
+                try {
+                    onNewMessage.invoke(it.payloadAsMessage())
+                } catch (e: Exception) {
+                    onError.invoke(e)
+                }
+            }
             .send()
     }
 
-    fun publish(message:     String,
+    fun publish(message:     Message,
                 subtopic:    String = "",
                 onPublished: () -> Unit = {},
-                onError:     () -> Unit = {}) {
+                onError:     () -> Unit = {},
+                retain:      Boolean = false
+    ) {
         client.publishWith()
             .topic(maintopic + subtopic)
             .payload(message.asPayload())
             .qos(qos)
-            .retain(false)
+            .retain(retain)
             .messageExpiryInterval(120)
             .send()
             .whenComplete {_, throwable ->
@@ -83,6 +96,21 @@ class MqttConnector (val mqttBroker: String,
     }
 }
 
-// praktische Extension Functions
-private fun String.asPayload() : ByteArray = toByteArray(StandardCharsets.UTF_8)
-private fun Mqtt5Publish.payloadAsString() : String = String(payloadAsBytes, StandardCharsets.UTF_8)
+// Extension Functions
+private fun Message.asPayload() : ByteArray = asJSON().toByteArray(StandardCharsets.UTF_8)
+private fun Mqtt5Publish.payloadAsMessage() : Message {
+    val obj = JSONObject(String(payloadAsBytes, StandardCharsets.UTF_8))
+    val type = obj.getString("type")
+    val subtype = obj.getString("subtype")
+    return when {
+        type.equals("system") && subtype.equals("connect") -> SystemMessageConnect(obj)
+        type.equals("system") && subtype.equals("newUsername") -> SystemMessageNewUsername(obj)
+        type.equals("system") && subtype.equals("newProfileImage") -> SystemMessageNewProfileImage(obj)
+        type.equals("system") && subtype.equals("newChat") -> SystemMessageNewChat(obj)
+        type.equals("system") && subtype.equals("leaveChat") -> SystemMessageLeaveChat(obj)
+        type.equals("message") && subtype.equals("text") -> MessageText(obj)
+        type.equals("message") && subtype.equals("image") -> MessageImage(obj)
+        type.equals("message") && subtype.equals("coordinates") -> MessageCoordinates(obj)
+        else -> throw IllegalArgumentException("Type or subtype unknown")
+    }
+}
