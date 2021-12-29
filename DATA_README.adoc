@@ -1,0 +1,187 @@
+= JSON Datenstruktur
+
+== Grundstruktur
+
+Eine JSON-Nachricht ist nach foldender Grundstruktur aufgebaut:
+
+[source,json]
+----
+{
+  "id": "8b0ee183-bc0b-423e-93e0-0b42c58fb62b",
+  "senderID": "37b6590c-542f-4496-9528-0cfdef18782e",
+  "type": "message",
+  "subtype": "coordinates",
+  "data": {
+    "lat": 47.888888,
+    "lon": 7.222222
+  },
+  "metaInfo": "Schrib was immer du ono wosch hie häre"
+}
+----
+
+* `id`: Meldungs-/Nachrichten-ID
+* `senderID`: ID des Absenders
+* `type`: Typ der Nachricht ( message | system | usw. )
+* `subtype`: Sub-Typ der Nachricht
+* `data`: Inhalt der Nachrucht
+* `metaInfo`: Zusätzliche Info, verwendung z.B. zum Debuggen (optional)
+
+== System-Meldungen
+
+Systemmeldungen sind gemäss der Grundstruktur aufgebaut und dienen zur Steuerung von ThatsApp. Diese Meldungen werden normalerweise auf dem Hauptchannel versendet und sind mit `"type": "system"` gekennzeichnet.
+
+Systemmeldungen unterscheiden sich mit folgenden Sub-Typen:
+
+=== Connect
+
+Der `connect` Sub-Typ meldet eine Anmeldung eines Benutzers. Dabei werden die spezifischen Daten der Grundstruktur wiefolgt gesetzt:
+
+[source,json]
+----
+{
+  "subtype": "connect",
+  "data": {
+    "username": "Samichlaus",
+    "profileImageLink": "www.luegsäuberimInternetnache.ch"
+  }
+}
+----
+
+* `username`: Name des angemeldeten Benutzers
+* `profileImageLink`: Link zum Profilbild
+
+=== Neuer Benutzername
+
+Der `newUsername` Sub-Typ meldet die Änderung des Benutzernamens. Dabei werden die spezifischen Daten der Grundstruktur wiefolgt gesetzt:
+
+[source,json]
+----
+{
+  "subtype": "newUsername",
+  "data": {
+    "username": "Sami2099"
+  }
+}
+----
+
+* `username`: Neu gesetzter Username
+
+=== Neues Profilbild
+
+Der `newProfileImage` Sub-Typ meldet die Änderung des Profilbildes. Dabei werden die spezifischen Daten der Grundstruktur wiefolgt gesetzt:
+
+[source,json]
+----
+{
+  "subtype": "newProfileImage",
+  "data": {
+    "profileImageLink": "www.luegsäuberimInternetnache.ch"
+  }
+}
+----
+
+* `profileImageLink`: Link zum Profilbild
+
+=== Neuer Chat
+
+Der `newChat` Sub-Typ meldet die Erstellung eines neuen Chats. Dabei werden die spezifischen Daten der Grundstruktur wiefolgt gesetzt:
+
+[source,json]
+----
+{
+  "subtype": "newChat",
+  "data": {
+    "chatID": "5fd307da-bedb-4824-9e71-1f9c7a2530e2",
+    "chatImageLink": "www.luegsäuberimInternetnache.ch",
+    "members": [
+      "37b6590c-542f-4496-9528-0cfdef18782e",
+      "717c0931-f019-4fbc-b9de-fa2f88ec91cd",
+      "6b89921a-3f85-431b-85ea-8d16505dc170"
+    ]
+  }
+}
+----
+
+* `chatID`: ID des neuen Chats
+* `chatImageLink`: Link zum Chat-Bild
+* `members`: Array mit allen Chat-Mitgliedern (eigene ID ebenfalls im Array)
+
+=== Chat verlassen
+
+Der `leaveChat` Sub-Typ meldet das Verlassen eines Chats. Dieser Befehl wird im jeweiligen Subchannel gesendet. Dabei werden die spezifischen Daten der Grundstruktur wiefolgt gesetzt:
+
+[source,json]
+----
+{
+  "subtype": "leaveChat",
+  "data": {}
+}
+----
+
+== Nachrichten
+
+Nachrichten werden im jeweiligen Chat versendet. Dies können Text-, Bild- oder Standort-Nachrichten sein. Nachrichten sind ebenfalls anhand der Grundstruktur aufgebaut und sind mit `"type": "message"` gekennzeichnet.
+
+Die Nachrichten Sub-Typen sind wiefolgt aufgebaut:
+
+=== Text
+
+Der `text` Sub-Typ wird zum Versand von Textnachrichten verwendet. Dabei werden die spezifischen Daten der Grundstruktur wiefolgt gesetzt:
+
+[source,json]
+----
+{
+  "subtype": "text",
+  "data": {
+    "priority": 1,
+    "deletingItself": false,
+    "text": "Dies ist eine Nachricht"
+  }
+}
+----
+
+* `priority`: Priorität einer Nachricht (könnte, z.B. rot blinken wenn wichtig, muss nicht implementiert werden)
+* `deletingItself`: Gibt an, ob sich eine Nachricht nach einer gewissen Zeit selbst löscht
+* `text`: eigentliche Nachricht
+
+=== Bild
+
+Der `image` Sub-Typ wird zum Versand von Bildern verwendet. Dabei werden die spezifischen Daten der Grundstruktur wiefolgt gesetzt:
+
+[source,json]
+----
+{
+  "subtype": "image",
+  "data": {
+    "priority": 1,
+    "deletingItself": false,
+    "imageLink": "www.luegsäuberimInternetnache.ch"
+  }
+}
+----
+
+* `priority`: Priorität einer Nachricht (könnte, z.B. rot blinken wenn wichtig, muss nicht implementiert werden)
+* `deletingItself`: Gibt an, ob sich eine Nachricht nach einer gewissen Zeit selbst löscht
+* `imageLink`: Link zum Bild
+
+=== Koordinaten
+
+Der `coordinates` Sub-Typ wird zum Versand von Koordinaten verwendet. Dabei werden die spezifischen Daten der Grundstruktur wiefolgt gesetzt:
+
+[source,json]
+----
+{
+  "subtype": "coordinates",
+  "data": {
+    "priority": 1,
+    "deletingItself": false,
+    "lat": 47.888888,
+    "lon": 7.222222
+  }
+}
+----
+
+* `priority`: Priorität einer Nachricht (könnte, z.B. rot blinken wenn wichtig, muss nicht implementiert werden)
+* `deletingItself`: Gibt an, ob sich eine Nachricht nach einer gewissen Zeit selbst löscht
+* `lat`: Breitengrad der Koordinaten
+* `lon`: Längengrad der Koordinaten
