@@ -1,5 +1,6 @@
 package fhnw.emoba.thatsapp.data
 
+import android.util.Log
 import com.hivemq.client.mqtt.datatypes.MqttQos
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish
@@ -48,10 +49,16 @@ class MqttConnector (val mqttBroker: String,
             }
     }
 
-    fun subscribe(subtopic:     String = "",
+    fun subscribe(chatID:     String = "",
                   onNewMessage: (Message) -> Unit,
                   onError:      (Exception) -> Unit,
     ){
+        var subtopic = if (chatID.equals("") || chatID.startsWith("/")) {
+            chatID
+        } else {
+            "/$chatID"
+        }
+
         client.subscribeWith()
             .topicFilter(maintopic + subtopic)
             .qos(qos)
@@ -64,6 +71,11 @@ class MqttConnector (val mqttBroker: String,
                 }
             }
             .send()
+            .whenComplete { _, throwable ->
+                if (throwable != null) {
+                    Log.d("ERROR", throwable.toString())
+                }
+            }
     }
 
     fun publish(message:     Message,
