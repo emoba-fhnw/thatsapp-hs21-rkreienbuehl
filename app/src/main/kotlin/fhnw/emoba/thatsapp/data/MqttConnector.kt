@@ -53,7 +53,7 @@ class MqttConnector (val mqttBroker: String,
                   onNewMessage: (Message) -> Unit,
                   onError:      (Exception) -> Unit,
     ){
-        var subtopic = if (chatID.equals("") || chatID.startsWith("/")) {
+        var subtopic = if (chatID == "" || chatID.startsWith("/")) {
             chatID
         } else {
             "/$chatID"
