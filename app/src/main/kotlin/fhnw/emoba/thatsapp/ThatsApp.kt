@@ -10,6 +10,7 @@ import fhnw.emoba.thatsapp.ui.AppUI
 object ThatsApp : EmobaApp {
 
     override fun initialize(activity: ComponentActivity) {
+        ThatsAppModel.connectAndSubscribe()
     }
 
     @Composable
