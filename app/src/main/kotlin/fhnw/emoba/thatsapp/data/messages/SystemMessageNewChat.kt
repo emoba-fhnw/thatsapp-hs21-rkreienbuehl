@@ -31,6 +31,7 @@ class SystemMessageNewChat(id: UUID, senderID: UUID, chatID: UUID, chatImageLink
                     "chatImageLink": ${data.chatImageLink},
                     "members": ${data.members}
                 },
+                "sendTime": "$sendTime",
                 "metaInfo": "$metaInfo"
             }
         """.trimIndent()

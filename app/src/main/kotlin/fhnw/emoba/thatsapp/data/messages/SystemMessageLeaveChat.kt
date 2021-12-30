@@ -22,6 +22,7 @@ class SystemMessageLeaveChat(id: UUID, senderID: UUID, metaInfo: String) : Messa
                 "type": "$type",
                 "subtype": "$subtype",
                 "data": {},
+                "sendTime": "$sendTime",
                 "metaInfo": "$metaInfo"
             }
         """.trimIndent()

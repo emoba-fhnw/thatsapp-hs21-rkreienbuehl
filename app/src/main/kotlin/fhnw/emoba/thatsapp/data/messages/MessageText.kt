@@ -30,6 +30,7 @@ class MessageText(id: UUID, senderID: UUID, priority: Int, deleteItself: Boolean
                     "deleteItself": ${data.deleteItself},
                     "text": "${data.text}"
                 },
+                "sendTime": "$sendTime",
                 "metaInfo": "$metaInfo"
             }
         """.trimIndent()

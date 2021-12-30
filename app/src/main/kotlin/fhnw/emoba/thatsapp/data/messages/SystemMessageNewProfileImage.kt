@@ -26,6 +26,7 @@ class SystemMessageNewProfileImage(id: UUID, senderID: UUID, profileImageLink: S
                 "data": {
                     "profileImageLink": "${data.profileImageLink}"
                 },
+                "sendTime": "$sendTime",
                 "metaInfo": "$metaInfo"
             }
         """.trimIndent()

@@ -30,6 +30,7 @@ class MessageImage(id: UUID, senderID: UUID, priority: Int, deleteItself: Boolea
                     "deleteItself": ${data.deleteItself},
                     "imageLink": "${data.imageLink}"
                 },
+                "sendTime": "$sendTime",
                 "metaInfo": "$metaInfo"
             }
         """.trimIndent()

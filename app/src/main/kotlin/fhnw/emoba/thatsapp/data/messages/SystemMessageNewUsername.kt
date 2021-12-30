@@ -26,6 +26,7 @@ class SystemMessageNewUsername(id: UUID, senderID: UUID, username: String, metaI
                 "data": {
                     "username": "${data.username}"
                 },
+                "sendTime": "$sendTime",
                 "metaInfo": "$metaInfo"
             }
         """.trimIndent()

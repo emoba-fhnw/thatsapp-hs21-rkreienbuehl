@@ -28,6 +28,7 @@ class SystemMessageConnect(id: UUID, senderID: UUID, username: String, profileIm
                     "username": ${data.username},
                     "profileImageLink": ${data.profileImageLink}
                 },
+                "sendTime": "$sendTime",
                 "metaInfo": "$metaInfo"
             }
         """.trimIndent()

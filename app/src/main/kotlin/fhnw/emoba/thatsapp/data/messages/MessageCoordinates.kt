@@ -34,6 +34,7 @@ class MessageCoordinates(id: UUID, senderID: UUID, priority: Int, deleteItself: 
                     "lat": ${data.lat},
                     "lon": ${data.lon}
                 },
+                "sendTime": "$sendTime",
                 "metaInfo": "$metaInfo"
             }
         """.trimIndent()
