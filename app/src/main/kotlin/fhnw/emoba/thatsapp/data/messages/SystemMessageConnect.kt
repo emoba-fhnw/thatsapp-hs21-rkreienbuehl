@@ -1,9 +1,10 @@
 package fhnw.emoba.thatsapp.data.messages
 
 import org.json.JSONObject
+import java.time.LocalDateTime
 import java.util.*
 
-class SystemMessageConnect(id: UUID, senderID: UUID, username: String, profileImageLink: String, metaInfo: String) : Message(id, senderID, metaInfo) {
+class SystemMessageConnect(id: UUID, senderID: UUID, username: String, profileImageLink: String, date: LocalDateTime, metaInfo: String) : Message(id, senderID, date, metaInfo) {
     override var type = "system"
     override var subtype = "connect"
     var data = ConnectData(username, profileImageLink)
@@ -14,8 +15,11 @@ class SystemMessageConnect(id: UUID, senderID: UUID, username: String, profileIm
                 UUID.fromString(obj.getString("senderID")),
                 obj.getJSONObject("data").getString("username"),
                 obj.getJSONObject("data").getString("profileImageLink"),
+                LocalDateTime.parse(obj.getString("sendTime")),
                 if (obj.has("metaInfo")) obj.getString("metaInfo") else ""
             )
+    constructor(id: UUID, senderID: UUID, username: String, profileImageLink: String, metaInfo: String) :
+            this(id, senderID, username, profileImageLink, LocalDateTime.now(), metaInfo)
 
     override fun asJSON(): String {
         return """

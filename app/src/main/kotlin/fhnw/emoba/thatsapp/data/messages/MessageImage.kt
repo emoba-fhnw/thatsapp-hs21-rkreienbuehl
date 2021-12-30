@@ -1,9 +1,10 @@
 package fhnw.emoba.thatsapp.data.messages
 
 import org.json.JSONObject
+import java.time.LocalDateTime
 import java.util.*
 
-class MessageImage(id: UUID, senderID: UUID, priority: Int, deletingItself: Boolean, imageLink: String, metaInfo: String) : Message(id, senderID, metaInfo) {
+class MessageImage(id: UUID, senderID: UUID, priority: Int, deletingItself: Boolean, imageLink: String, date: LocalDateTime, metaInfo: String) : Message(id, senderID, date, metaInfo) {
     override var type = "message"
     override var subtype = "image"
     var data = ImageData(priority, deletingItself, imageLink)
@@ -15,8 +16,11 @@ class MessageImage(id: UUID, senderID: UUID, priority: Int, deletingItself: Bool
                 obj.getJSONObject("data").getInt("priority"),
                 obj.getJSONObject("data").getBoolean("deletingItself"),
                 obj.getJSONObject("data").getString("imageLink"),
+                LocalDateTime.parse(obj.getString("sendTime")),
                 if (obj.has("metaInfo")) obj.getString("metaInfo") else ""
             )
+    constructor(id: UUID, senderID: UUID, priority: Int, deletingItself: Boolean, imageLink: String, metaInfo: String) :
+            this(id, senderID, priority, deletingItself, imageLink, LocalDateTime.now(), metaInfo)
 
     override fun asJSON(): String {
         return """

@@ -1,9 +1,10 @@
 package fhnw.emoba.thatsapp.data.messages
 
 import org.json.JSONObject
+import java.time.LocalDateTime
 import java.util.*
 
-class MessageText(id: UUID, senderID: UUID, priority: Int, deletingItself: Boolean, text: String, metaInfo: String) : Message(id, senderID, metaInfo) {
+class MessageText(id: UUID, senderID: UUID, priority: Int, deletingItself: Boolean, text: String, date: LocalDateTime, metaInfo: String) : Message(id, senderID, date, metaInfo) {
     override var type = "message"
     override var subtype = "text"
     var data = TextData(priority, deletingItself, text)
@@ -15,8 +16,11 @@ class MessageText(id: UUID, senderID: UUID, priority: Int, deletingItself: Boole
                 obj.getJSONObject("data").getInt("priority"),
                 obj.getJSONObject("data").getBoolean("deletingItself"),
                 obj.getJSONObject("data").getString("text"),
+                LocalDateTime.parse(obj.getString("sendTime")),
                 if (obj.has("metaInfo")) obj.getString("metaInfo") else ""
             )
+    constructor(id: UUID, senderID: UUID, priority: Int, deletingItself: Boolean, text: String, metaInfo: String) :
+            this(id, senderID, priority, deletingItself, text, LocalDateTime.now(), metaInfo)
 
     override fun asJSON(): String {
         return """
