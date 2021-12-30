@@ -87,7 +87,7 @@ class CameraAppConnector(val activity: ComponentActivity) {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
             val providerFile = FileProvider.getUriForFile(
                 activity,
-                "fhnw.emoba.fileprovider",
+                "fhnw.thatsapp.fileprovider",
                 photoFile
             )
             putExtra(MediaStore.EXTRA_OUTPUT, providerFile)  //die CameraApp speichert in den 'photofile'

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="fhnw.emoba">
+    package="fhnw.thatsapp">
 
     <!-- Zugriff auf's Internet -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -24,7 +24,7 @@
         android:theme="@style/EmobaTheme">
 
         <provider
-            android:authorities="fhnw.emoba.fileprovider"
+            android:authorities="fhnw.thatsapp.fileprovider"
             android:name="androidx.core.content.FileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
