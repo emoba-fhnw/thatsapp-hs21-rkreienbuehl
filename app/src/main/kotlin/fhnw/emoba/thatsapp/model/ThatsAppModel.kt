@@ -7,6 +7,7 @@ import fhnw.emoba.thatsapp.data.ChatInfo
 import fhnw.emoba.thatsapp.data.MqttConnector
 import fhnw.emoba.thatsapp.data.UserInfo
 import fhnw.emoba.thatsapp.data.messages.*
+import java.time.LocalDateTime
 import java.util.*
 
 object ThatsAppModel {
@@ -120,7 +121,7 @@ object ThatsAppModel {
 
             val chatID = message.data.chatID.toString()
 
-            val chatInfo = ChatInfo(message.data.chatID, message.data.chatImageLink, members, listOf())
+            val chatInfo = ChatInfo(message.data.chatID, message.data.chatImageLink, members, listOf(), LocalDateTime.now())
             chatInfos.add(chatInfo)
 
             mqttConnector.subscribe(chatID,
