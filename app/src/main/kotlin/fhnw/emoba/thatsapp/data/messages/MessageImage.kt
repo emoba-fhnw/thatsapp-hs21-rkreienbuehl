@@ -3,17 +3,17 @@ package fhnw.emoba.thatsapp.data.messages
 import org.json.JSONObject
 import java.util.*
 
-class MessageImage(id: UUID, senderID: UUID, priority: Int, deleteItself: Boolean, imageLink: String, metaInfo: String) : Message(id, senderID, metaInfo) {
+class MessageImage(id: UUID, senderID: UUID, priority: Int, deletingItself: Boolean, imageLink: String, metaInfo: String) : Message(id, senderID, metaInfo) {
     override var type = "message"
     override var subtype = "image"
-    var data = ImageData(priority, deleteItself, imageLink)
+    var data = ImageData(priority, deletingItself, imageLink)
 
     constructor(obj: JSONObject) :
             this(
                 UUID.fromString(obj.getString("id")),
                 UUID.fromString(obj.getString("senderID")),
                 obj.getJSONObject("data").getInt("priority"),
-                obj.getJSONObject("data").getBoolean("deleteItself"),
+                obj.getJSONObject("data").getBoolean("deletingItself"),
                 obj.getJSONObject("data").getString("imageLink"),
                 if (obj.has("metaInfo")) obj.getString("metaInfo") else ""
             )
@@ -27,7 +27,7 @@ class MessageImage(id: UUID, senderID: UUID, priority: Int, deleteItself: Boolea
                 "subtype": "$subtype",
                 "data": {
                     "priority": ${data.priority},
-                    "deleteItself": ${data.deleteItself},
+                    "deletingItself": ${data.deletingItself},
                     "imageLink": "${data.imageLink}"
                 },
                 "sendTime": "$sendTime",
@@ -36,9 +36,9 @@ class MessageImage(id: UUID, senderID: UUID, priority: Int, deleteItself: Boolea
         """.trimIndent()
     }
 
-    inner class ImageData(priority: Int, deleteItself: Boolean, imageLink: String) {
+    inner class ImageData(priority: Int, deletingItself: Boolean, imageLink: String) {
         var priority = priority
-        var deleteItself = deleteItself
+        var deletingItself = deletingItself
         var imageLink = imageLink
     }
 }
