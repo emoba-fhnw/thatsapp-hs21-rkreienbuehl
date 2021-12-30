@@ -15,6 +15,7 @@ Eine JSON-Nachricht ist nach foldender Grundstruktur aufgebaut:
     "lat": 47.888888,
     "lon": 7.222222
   },
+  "sendTime": "2018-12-10T13:45:00.000Z",
   "metaInfo": "Schrib was immer du ono wosch hie häre"
 }
 ----
@@ -24,6 +25,7 @@ Eine JSON-Nachricht ist nach foldender Grundstruktur aufgebaut:
 * `type`: Typ der Nachricht ( message | system | usw. )
 * `subtype`: Sub-Typ der Nachricht
 * `data`: Inhalt der Nachrucht
+* `sendTime`: Zeit, wann die Nachricht versendet wurde
 * `metaInfo`: Zusätzliche Info, verwendung z.B. zum Debuggen (optional)
 
 == System-Meldungen
