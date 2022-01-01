@@ -1,16 +1,27 @@
 package fhnw.emoba.thatsapp.ui
 
 
-import androidx.compose.material.Text
+import androidx.compose.animation.Crossfade
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.sp
+import fhnw.emoba.thatsapp.data.Screens
 import fhnw.emoba.thatsapp.model.ThatsAppModel
+import fhnw.emoba.thatsapp.ui.screens.ChatListUI
+import fhnw.emoba.thatsapp.ui.screens.SettingsUI
+import fhnw.emoba.thatsapp.ui.screens.UserListUI
 
 
 @Composable
 fun AppUI(model : ThatsAppModel){
-    with(model){
-        Text(text = title, style = TextStyle(fontSize = 28.sp))
+    with(model) {
+        MaterialTheme {
+            Crossfade(targetState = activeScreen) {
+                when (it) {
+                    Screens.CHATS -> { ChatListUI(model) }
+                    Screens.USERS -> { UserListUI(model) }
+                    Screens.SETTINGS -> { SettingsUI(model) }
+                }
+            }
+        }
     }
 }

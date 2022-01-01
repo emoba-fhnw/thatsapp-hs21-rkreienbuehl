@@ -1,8 +1,8 @@
 package fhnw.emoba.thatsapp.model
 
 import android.util.Log
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.*
+import fhnw.emoba.thatsapp.data.Screens
 import fhnw.emoba.thatsapp.data.ChatInfo
 import fhnw.emoba.thatsapp.data.MqttConnector
 import fhnw.emoba.thatsapp.data.UserInfo
@@ -12,6 +12,9 @@ import java.util.*
 
 object ThatsAppModel {
     var title = "Hello ThatsApp"
+
+    var activeScreen by mutableStateOf(Screens.CHATS)
+    var isChatDetail by mutableStateOf(false)
 
     private var ownUser = UserInfo(UUID.fromString("fe79df56-a84b-4029-ae02-bbc08a6e9ed5"), "Roger", "")
 
