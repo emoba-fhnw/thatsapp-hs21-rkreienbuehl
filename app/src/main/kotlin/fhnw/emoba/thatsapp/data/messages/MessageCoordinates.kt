@@ -1,5 +1,7 @@
 package fhnw.emoba.thatsapp.data.messages
 
+import fhnw.emoba.thatsapp.data.dateFromJSON
+import fhnw.emoba.thatsapp.data.toJSONDateString
 import org.json.JSONObject
 import java.time.LocalDateTime
 import java.util.*
@@ -23,7 +25,7 @@ class MessageCoordinates(id: UUID, senderID: UUID, priority: Int, deletingItself
                 if (obj.has("metaInfo")) obj.getString("metaInfo") else ""
             )
     constructor(id: UUID, senderID: UUID, priority: Int, deletingItself: Boolean, lat: Number, lon: Number, date: String, metaInfo: String) :
-            this(id, senderID, priority, deletingItself, lat, lon, parseDateString(date), metaInfo)
+            this(id, senderID, priority, deletingItself, lat, lon, date.dateFromJSON(), metaInfo)
     constructor(id: UUID, senderID: UUID, priority: Int, deletingItself: Boolean, lat: Number, lon: Number, metaInfo: String) :
             this(id, senderID, priority, deletingItself, lat, lon, LocalDateTime.now(), metaInfo)
 
@@ -40,7 +42,7 @@ class MessageCoordinates(id: UUID, senderID: UUID, priority: Int, deletingItself
                     "lat": ${data.lat},
                     "lon": ${data.lon}
                 },
-                "sendTime": "${getFormattedDateString()}",
+                "sendTime": "${sendTime.toJSONDateString()}",
                 "metaInfo": "$metaInfo"
             }
         """.trimIndent()

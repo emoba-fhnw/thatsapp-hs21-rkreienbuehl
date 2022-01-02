@@ -1,5 +1,7 @@
 package fhnw.emoba.thatsapp.data.messages
 
+import fhnw.emoba.thatsapp.data.dateFromJSON
+import fhnw.emoba.thatsapp.data.toJSONDateString
 import org.json.JSONObject
 import java.time.LocalDateTime
 import java.util.*
@@ -16,7 +18,7 @@ class SystemMessageLeaveChat(id: UUID, senderID: UUID, date: LocalDateTime, meta
                 if (obj.has("metaInfo")) obj.getString("metaInfo") else ""
             )
     constructor(id: UUID, senderID: UUID, date: String, metaInfo: String) :
-            this(id, senderID, parseDateString(date), metaInfo)
+            this(id, senderID, date.dateFromJSON(), metaInfo)
     constructor(id: UUID, senderID: UUID, metaInfo: String) :
             this(id, senderID, LocalDateTime.now(), metaInfo)
 
@@ -28,7 +30,7 @@ class SystemMessageLeaveChat(id: UUID, senderID: UUID, date: LocalDateTime, meta
                 "type": "$type",
                 "subtype": "$subtype",
                 "data": {},
-                "sendTime": "${getFormattedDateString()}",
+                "sendTime": "${sendTime.toJSONDateString()}",
                 "metaInfo": "$metaInfo"
             }
         """.trimIndent()

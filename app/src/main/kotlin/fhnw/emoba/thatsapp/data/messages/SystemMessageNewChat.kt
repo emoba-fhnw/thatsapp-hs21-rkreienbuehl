@@ -1,5 +1,7 @@
 package fhnw.emoba.thatsapp.data.messages
 
+import fhnw.emoba.thatsapp.data.dateFromJSON
+import fhnw.emoba.thatsapp.data.toJSONDateString
 import org.json.JSONArray
 import org.json.JSONObject
 import java.time.LocalDateTime
@@ -22,7 +24,7 @@ class SystemMessageNewChat(id: UUID, senderID: UUID, chatID: UUID, chatImageLink
                 if (obj.has("metaInfo")) obj.getString("metaInfo") else ""
             )
     constructor(id: UUID, senderID: UUID, chatID: UUID, chatImageLink: String, members: List<String>, date: String, metaInfo: String) :
-            this(id, senderID, chatID, chatImageLink, members, parseDateString(date), metaInfo)
+            this(id, senderID, chatID, chatImageLink, members, date.dateFromJSON(), metaInfo)
     constructor(id: UUID, senderID: UUID, chatID: UUID, chatImageLink: String, members: List<String>, metaInfo: String) :
             this(id, senderID, chatID, chatImageLink, members, LocalDateTime.now(), metaInfo)
 
@@ -38,7 +40,7 @@ class SystemMessageNewChat(id: UUID, senderID: UUID, chatID: UUID, chatImageLink
                     "chatImageLink": ${data.chatImageLink},
                     "members": ${data.members}
                 },
-                "sendTime": "${getFormattedDateString()}",
+                "sendTime": "${sendTime.toJSONDateString()}",
                 "metaInfo": "$metaInfo"
             }
         """.trimIndent()

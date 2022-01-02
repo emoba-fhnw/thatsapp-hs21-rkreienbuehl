@@ -1,5 +1,7 @@
 package fhnw.emoba.thatsapp.data.messages
 
+import fhnw.emoba.thatsapp.data.dateFromJSON
+import fhnw.emoba.thatsapp.data.toJSONDateString
 import org.json.JSONObject
 import java.time.LocalDateTime
 import java.util.*
@@ -20,7 +22,7 @@ class MessageImage(id: UUID, senderID: UUID, priority: Int, deletingItself: Bool
                 if (obj.has("metaInfo")) obj.getString("metaInfo") else ""
             )
     constructor(id: UUID, senderID: UUID, priority: Int, deletingItself: Boolean, imageLink: String, date: String, metaInfo: String) :
-            this(id, senderID, priority, deletingItself, imageLink, parseDateString(date), metaInfo)
+            this(id, senderID, priority, deletingItself, imageLink, date.dateFromJSON(), metaInfo)
     constructor(id: UUID, senderID: UUID, priority: Int, deletingItself: Boolean, imageLink: String, metaInfo: String) :
             this(id, senderID, priority, deletingItself, imageLink, LocalDateTime.now(), metaInfo)
 
@@ -36,7 +38,7 @@ class MessageImage(id: UUID, senderID: UUID, priority: Int, deletingItself: Bool
                     "deletingItself": ${data.deletingItself},
                     "imageLink": "${data.imageLink}"
                 },
-                "sendTime": "${getFormattedDateString()}",
+                "sendTime": "${sendTime.toJSONDateString()}",
                 "metaInfo": "$metaInfo"
             }
         """.trimIndent()
