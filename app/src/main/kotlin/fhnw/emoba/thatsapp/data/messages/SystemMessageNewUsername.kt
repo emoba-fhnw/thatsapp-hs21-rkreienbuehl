@@ -14,9 +14,11 @@ class SystemMessageNewUsername(id: UUID, senderID: UUID, username: String, date:
                 UUID.fromString(obj.getString("id")),
                 UUID.fromString(obj.getString("senderID")),
                 obj.getJSONObject("data").getString("username"),
-                LocalDateTime.parse(obj.getString("sendTime")),
+                obj.getString("sendTime"),
                 if (obj.has("metaInfo")) obj.getString("metaInfo") else ""
             )
+    constructor(id: UUID, senderID: UUID, username: String, date: String, metaInfo: String) :
+            this(id, senderID, username, parseDateString(date), metaInfo)
     constructor(id: UUID, senderID: UUID, username: String, metaInfo: String) :
             this(id, senderID, username, LocalDateTime.now(), metaInfo)
 
@@ -30,7 +32,7 @@ class SystemMessageNewUsername(id: UUID, senderID: UUID, username: String, date:
                 "data": {
                     "username": "${data.username}"
                 },
-                "sendTime": "$sendTime",
+                "sendTime": "${getFormattedDateString()}",
                 "metaInfo": "$metaInfo"
             }
         """.trimIndent()

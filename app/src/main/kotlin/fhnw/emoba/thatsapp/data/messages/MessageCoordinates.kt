@@ -19,9 +19,11 @@ class MessageCoordinates(id: UUID, senderID: UUID, priority: Int, deletingItself
                 obj.getJSONObject("data").getBoolean("deletingItself"),
                 obj.getJSONObject("data").getDouble("lat"),
                 obj.getJSONObject("data").getDouble("lon"),
-                LocalDateTime.parse(obj.getString("sendTime")),
+                obj.getString("sendTime"),
                 if (obj.has("metaInfo")) obj.getString("metaInfo") else ""
             )
+    constructor(id: UUID, senderID: UUID, priority: Int, deletingItself: Boolean, lat: Number, lon: Number, date: String, metaInfo: String) :
+            this(id, senderID, priority, deletingItself, lat, lon, parseDateString(date), metaInfo)
     constructor(id: UUID, senderID: UUID, priority: Int, deletingItself: Boolean, lat: Number, lon: Number, metaInfo: String) :
             this(id, senderID, priority, deletingItself, lat, lon, LocalDateTime.now(), metaInfo)
 
@@ -38,7 +40,7 @@ class MessageCoordinates(id: UUID, senderID: UUID, priority: Int, deletingItself
                     "lat": ${data.lat},
                     "lon": ${data.lon}
                 },
-                "sendTime": "$sendTime",
+                "sendTime": "${getFormattedDateString()}",
                 "metaInfo": "$metaInfo"
             }
         """.trimIndent()

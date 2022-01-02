@@ -12,9 +12,11 @@ class SystemMessageLeaveChat(id: UUID, senderID: UUID, date: LocalDateTime, meta
             this(
                 UUID.fromString(obj.getString("id")),
                 UUID.fromString(obj.getString("senderID")),
-                LocalDateTime.parse(obj.getString("sendTime")),
+                obj.getString("sendTime"),
                 if (obj.has("metaInfo")) obj.getString("metaInfo") else ""
             )
+    constructor(id: UUID, senderID: UUID, date: String, metaInfo: String) :
+            this(id, senderID, parseDateString(date), metaInfo)
     constructor(id: UUID, senderID: UUID, metaInfo: String) :
             this(id, senderID, LocalDateTime.now(), metaInfo)
 
@@ -26,7 +28,7 @@ class SystemMessageLeaveChat(id: UUID, senderID: UUID, date: LocalDateTime, meta
                 "type": "$type",
                 "subtype": "$subtype",
                 "data": {},
-                "sendTime": "$sendTime",
+                "sendTime": "${getFormattedDateString()}",
                 "metaInfo": "$metaInfo"
             }
         """.trimIndent()

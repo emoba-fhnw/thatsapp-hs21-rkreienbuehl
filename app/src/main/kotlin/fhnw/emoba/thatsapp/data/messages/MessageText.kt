@@ -16,9 +16,11 @@ class MessageText(id: UUID, senderID: UUID, priority: Int, deletingItself: Boole
                 obj.getJSONObject("data").getInt("priority"),
                 obj.getJSONObject("data").getBoolean("deletingItself"),
                 obj.getJSONObject("data").getString("text"),
-                LocalDateTime.parse(obj.getString("sendTime")),
+                obj.getString("sendTime"),
                 if (obj.has("metaInfo")) obj.getString("metaInfo") else ""
             )
+    constructor(id: UUID, senderID: UUID, priority: Int, deletingItself: Boolean, text: String, date: String, metaInfo: String) :
+            this(id, senderID, priority, deletingItself, text, parseDateString(date), metaInfo)
     constructor(id: UUID, senderID: UUID, priority: Int, deletingItself: Boolean, text: String, metaInfo: String) :
             this(id, senderID, priority, deletingItself, text, LocalDateTime.now(), metaInfo)
 
@@ -34,7 +36,7 @@ class MessageText(id: UUID, senderID: UUID, priority: Int, deletingItself: Boole
                     "deletingItself": ${data.deletingItself},
                     "text": "${data.text}"
                 },
-                "sendTime": "$sendTime",
+                "sendTime": "${getFormattedDateString()}",
                 "metaInfo": "$metaInfo"
             }
         """.trimIndent()

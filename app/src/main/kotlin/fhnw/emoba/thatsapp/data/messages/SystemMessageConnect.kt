@@ -15,9 +15,11 @@ class SystemMessageConnect(id: UUID, senderID: UUID, username: String, profileIm
                 UUID.fromString(obj.getString("senderID")),
                 obj.getJSONObject("data").getString("username"),
                 obj.getJSONObject("data").getString("profileImageLink"),
-                LocalDateTime.parse(obj.getString("sendTime")),
+                obj.getString("sendTime"),
                 if (obj.has("metaInfo")) obj.getString("metaInfo") else ""
             )
+    constructor(id: UUID, senderID: UUID, username: String, profileImageLink: String, date: String, metaInfo: String) :
+            this(id, senderID, username, profileImageLink, parseDateString(date), metaInfo)
     constructor(id: UUID, senderID: UUID, username: String, profileImageLink: String, metaInfo: String) :
             this(id, senderID, username, profileImageLink, LocalDateTime.now(), metaInfo)
 
@@ -32,7 +34,7 @@ class SystemMessageConnect(id: UUID, senderID: UUID, username: String, profileIm
                     "username": ${data.username},
                     "profileImageLink": ${data.profileImageLink}
                 },
-                "sendTime": "$sendTime",
+                "sendTime": "${getFormattedDateString()}",
                 "metaInfo": "$metaInfo"
             }
         """.trimIndent()

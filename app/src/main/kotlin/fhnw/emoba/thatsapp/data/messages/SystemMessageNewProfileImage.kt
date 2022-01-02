@@ -14,9 +14,11 @@ class SystemMessageNewProfileImage(id: UUID, senderID: UUID, profileImageLink: S
                 UUID.fromString(obj.getString("id")),
                 UUID.fromString(obj.getString("senderID")),
                 obj.getJSONObject("data").getString("profileImageLink"),
-                LocalDateTime.parse(obj.getString("sendTime")),
+                obj.getString("sendTime"),
                 if (obj.has("metaInfo")) obj.getString("metaInfo") else ""
             )
+    constructor(id: UUID, senderID: UUID, profileImageLink: String, date: String, metaInfo: String) :
+            this(id, senderID, profileImageLink, parseDateString(date), metaInfo)
     constructor(id: UUID, senderID: UUID, profileImageLink: String, metaInfo: String) :
             this(id, senderID, profileImageLink, LocalDateTime.now(), metaInfo)
 
@@ -30,7 +32,7 @@ class SystemMessageNewProfileImage(id: UUID, senderID: UUID, profileImageLink: S
                 "data": {
                     "profileImageLink": "${data.profileImageLink}"
                 },
-                "sendTime": "$sendTime",
+                "sendTime": "${getFormattedDateString()}",
                 "metaInfo": "$metaInfo"
             }
         """.trimIndent()

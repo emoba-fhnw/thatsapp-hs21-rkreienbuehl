@@ -16,9 +16,11 @@ class MessageImage(id: UUID, senderID: UUID, priority: Int, deletingItself: Bool
                 obj.getJSONObject("data").getInt("priority"),
                 obj.getJSONObject("data").getBoolean("deletingItself"),
                 obj.getJSONObject("data").getString("imageLink"),
-                LocalDateTime.parse(obj.getString("sendTime")),
+                obj.getString("sendTime"),
                 if (obj.has("metaInfo")) obj.getString("metaInfo") else ""
             )
+    constructor(id: UUID, senderID: UUID, priority: Int, deletingItself: Boolean, imageLink: String, date: String, metaInfo: String) :
+            this(id, senderID, priority, deletingItself, imageLink, parseDateString(date), metaInfo)
     constructor(id: UUID, senderID: UUID, priority: Int, deletingItself: Boolean, imageLink: String, metaInfo: String) :
             this(id, senderID, priority, deletingItself, imageLink, LocalDateTime.now(), metaInfo)
 
@@ -34,7 +36,7 @@ class MessageImage(id: UUID, senderID: UUID, priority: Int, deletingItself: Bool
                     "deletingItself": ${data.deletingItself},
                     "imageLink": "${data.imageLink}"
                 },
-                "sendTime": "$sendTime",
+                "sendTime": "${getFormattedDateString()}",
                 "metaInfo": "$metaInfo"
             }
         """.trimIndent()
