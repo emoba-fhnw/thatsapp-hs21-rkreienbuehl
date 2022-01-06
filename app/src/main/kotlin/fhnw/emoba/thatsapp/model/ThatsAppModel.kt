@@ -2,6 +2,8 @@ package fhnw.emoba.thatsapp.model
 
 import android.util.Log
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import fhnw.emoba.thatsapp.data.Screens
 import fhnw.emoba.thatsapp.data.ChatInfo
 import fhnw.emoba.thatsapp.data.MqttConnector
@@ -16,7 +18,7 @@ object ThatsAppModel {
     var activeScreen by mutableStateOf(Screens.CHATS)
     var isChatDetail by mutableStateOf(false)
 
-    private var ownUser = UserInfo(UUID.fromString("fe79df56-a84b-4029-ae02-bbc08a6e9ed5"), "Roger", "")
+    var ownUser = UserInfo(UUID.fromString("fe79df56-a84b-4029-ae02-bbc08a6e9ed5"), "Roger", "")
 
     private const val mqttBroker    = "broker.hivemq.com"
     private const val mainTopic     = "fhnw/emoba/flutterapp"
@@ -124,7 +126,7 @@ object ThatsAppModel {
 
             val chatID = message.data.chatID.toString()
 
-            val chatInfo = ChatInfo(message.data.chatID, message.data.chatImageLink, members, listOf(), LocalDateTime.now())
+            val chatInfo = ChatInfo(message.data.chatID, message.data.chatImageLink, members, listOf(), LocalDateTime.now(), userInfos[message.senderID.toString()]!!)
             chatInfos.add(chatInfo)
 
             mqttConnector.subscribe(chatID,
@@ -159,6 +161,8 @@ object ThatsAppModel {
             Log.d("DEBUG", "Neue Textnachricht auf Chat ${chatInfo.id}")
 
             chatInfo.messages.add(message)
+            chatInfo.lastMessage = message.sendTime
+            chatInfo.lastMessageSender = userInfos[message.senderID.toString()]!!
         } else {
             Log.d("ERROR", "Neue Textnachricht auf falschem Chat")
         }
@@ -170,6 +174,8 @@ object ThatsAppModel {
             Log.d("DEBUG", "Neue Bildnachricht auf Chat ${chatInfo.id}")
 
             chatInfo.messages.add(message)
+            chatInfo.lastMessage = message.sendTime
+            chatInfo.lastMessageSender = userInfos[message.senderID.toString()]!!
         } else {
             Log.d("ERROR", "Neue Bildnachricht auf falschem Chat")
         }
@@ -180,6 +186,8 @@ object ThatsAppModel {
             Log.d("DEBUG", "Neue Koordinatennachricht auf Chat ${chatInfo.id}")
 
             chatInfo.messages.add(message)
+            chatInfo.lastMessage = message.sendTime
+            chatInfo.lastMessageSender = userInfos[message.senderID.toString()]!!
         } else {
             Log.d("ERROR", "Neue Koordinatennachricht auf falschem Chat")
         }
