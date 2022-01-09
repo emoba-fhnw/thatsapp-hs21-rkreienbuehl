@@ -23,8 +23,8 @@ class MessageText(id: UUID, senderID: UUID, priority: Int, deletingItself: Boole
             )
     constructor(id: UUID, senderID: UUID, priority: Int, deletingItself: Boolean, text: String, date: String, metaInfo: String) :
             this(id, senderID, priority, deletingItself, text, date.dateFromJSON(), metaInfo)
-    constructor(id: UUID, senderID: UUID, priority: Int, deletingItself: Boolean, text: String, metaInfo: String) :
-            this(id, senderID, priority, deletingItself, text, LocalDateTime.now(), metaInfo)
+    constructor(senderID: UUID, priority: Int, deletingItself: Boolean, text: String, metaInfo: String) :
+            this(UUID.randomUUID(), senderID, priority, deletingItself, text, LocalDateTime.now(), metaInfo)
 
     override fun asJSON(): String {
         return """

@@ -22,8 +22,8 @@ class SystemMessageConnect(id: UUID, senderID: UUID, username: String, profileIm
             )
     constructor(id: UUID, senderID: UUID, username: String, profileImageLink: String, date: String, metaInfo: String) :
             this(id, senderID, username, profileImageLink, date.dateFromJSON(), metaInfo)
-    constructor(id: UUID, senderID: UUID, username: String, profileImageLink: String, metaInfo: String) :
-            this(id, senderID, username, profileImageLink, LocalDateTime.now(), metaInfo)
+    constructor(senderID: UUID, username: String, profileImageLink: String, metaInfo: String) :
+            this(UUID.randomUUID(), senderID, username, profileImageLink, LocalDateTime.now(), metaInfo)
 
     override fun asJSON(): String {
         return """

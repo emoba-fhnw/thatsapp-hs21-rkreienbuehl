@@ -1,5 +1,9 @@
 package fhnw.emoba.thatsapp.data.messages
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.ImageBitmap
 import fhnw.emoba.thatsapp.data.dateFromJSON
 import fhnw.emoba.thatsapp.data.toJSONDateString
 import org.json.JSONObject
@@ -23,8 +27,8 @@ class MessageImage(id: UUID, senderID: UUID, priority: Int, deletingItself: Bool
             )
     constructor(id: UUID, senderID: UUID, priority: Int, deletingItself: Boolean, imageLink: String, date: String, metaInfo: String) :
             this(id, senderID, priority, deletingItself, imageLink, date.dateFromJSON(), metaInfo)
-    constructor(id: UUID, senderID: UUID, priority: Int, deletingItself: Boolean, imageLink: String, metaInfo: String) :
-            this(id, senderID, priority, deletingItself, imageLink, LocalDateTime.now(), metaInfo)
+    constructor(senderID: UUID, priority: Int, deletingItself: Boolean, imageLink: String, metaInfo: String) :
+            this(UUID.randomUUID(), senderID, priority, deletingItself, imageLink, LocalDateTime.now(), metaInfo)
 
     override fun asJSON(): String {
         return """
@@ -48,5 +52,6 @@ class MessageImage(id: UUID, senderID: UUID, priority: Int, deletingItself: Bool
         var priority = priority
         var deletingItself = deletingItself
         var imageLink = imageLink
+        var image by mutableStateOf<ImageBitmap?>(null)
     }
 }

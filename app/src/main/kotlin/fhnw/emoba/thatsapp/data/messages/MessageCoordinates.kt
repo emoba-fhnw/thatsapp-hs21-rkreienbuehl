@@ -1,12 +1,13 @@
 package fhnw.emoba.thatsapp.data.messages
 
+import fhnw.emoba.thatsapp.data.GeoPosition
 import fhnw.emoba.thatsapp.data.dateFromJSON
 import fhnw.emoba.thatsapp.data.toJSONDateString
 import org.json.JSONObject
 import java.time.LocalDateTime
 import java.util.*
 
-class MessageCoordinates(id: UUID, senderID: UUID, priority: Int, deletingItself: Boolean, lat: Number, lon: Number, date: LocalDateTime, metaInfo: String) :
+class MessageCoordinates(id: UUID, senderID: UUID, priority: Int, deletingItself: Boolean, lat: Double, lon: Double, date: LocalDateTime, metaInfo: String) :
     Message(id, senderID, date, metaInfo) {
 
     override var type = "message"
@@ -24,10 +25,10 @@ class MessageCoordinates(id: UUID, senderID: UUID, priority: Int, deletingItself
                 obj.getString("sendTime"),
                 if (obj.has("metaInfo")) obj.getString("metaInfo") else ""
             )
-    constructor(id: UUID, senderID: UUID, priority: Int, deletingItself: Boolean, lat: Number, lon: Number, date: String, metaInfo: String) :
+    constructor(id: UUID, senderID: UUID, priority: Int, deletingItself: Boolean, lat: Double, lon: Double, date: String, metaInfo: String) :
             this(id, senderID, priority, deletingItself, lat, lon, date.dateFromJSON(), metaInfo)
-    constructor(id: UUID, senderID: UUID, priority: Int, deletingItself: Boolean, lat: Number, lon: Number, metaInfo: String) :
-            this(id, senderID, priority, deletingItself, lat, lon, LocalDateTime.now(), metaInfo)
+    constructor(senderID: UUID, priority: Int, deletingItself: Boolean, lat: Double, lon: Double, metaInfo: String) :
+            this(UUID.randomUUID(), senderID, priority, deletingItself, lat, lon, LocalDateTime.now(), metaInfo)
 
     override fun asJSON(): String {
         return """
@@ -48,10 +49,11 @@ class MessageCoordinates(id: UUID, senderID: UUID, priority: Int, deletingItself
         """.trimIndent()
     }
 
-    inner class CoordinatesData(priority: Int, deletingItself: Boolean, lat: Number, lon: Number) {
+    inner class CoordinatesData(priority: Int, deletingItself: Boolean, lat: Double, lon: Double) {
         var priority = priority
         var deletingItself = deletingItself
         var lat = lat
         var lon = lon
+        var geoCoordinates = GeoPosition(lon, lat, 0.0);
     }
 }

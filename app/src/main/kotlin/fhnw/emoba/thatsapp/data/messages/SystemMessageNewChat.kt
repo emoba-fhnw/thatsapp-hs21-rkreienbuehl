@@ -25,8 +25,8 @@ class SystemMessageNewChat(id: UUID, senderID: UUID, chatID: UUID, chatImageLink
             )
     constructor(id: UUID, senderID: UUID, chatID: UUID, chatImageLink: String, members: List<String>, date: String, metaInfo: String) :
             this(id, senderID, chatID, chatImageLink, members, date.dateFromJSON(), metaInfo)
-    constructor(id: UUID, senderID: UUID, chatID: UUID, chatImageLink: String, members: List<String>, metaInfo: String) :
-            this(id, senderID, chatID, chatImageLink, members, LocalDateTime.now(), metaInfo)
+    constructor(senderID: UUID, chatID: UUID, chatImageLink: String, members: List<String>, metaInfo: String) :
+            this(UUID.randomUUID(), senderID, chatID, chatImageLink, members, LocalDateTime.now(), metaInfo)
 
     override fun asJSON(): String {
         return """

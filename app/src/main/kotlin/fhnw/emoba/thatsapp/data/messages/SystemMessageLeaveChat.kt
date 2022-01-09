@@ -19,8 +19,8 @@ class SystemMessageLeaveChat(id: UUID, senderID: UUID, date: LocalDateTime, meta
             )
     constructor(id: UUID, senderID: UUID, date: String, metaInfo: String) :
             this(id, senderID, date.dateFromJSON(), metaInfo)
-    constructor(id: UUID, senderID: UUID, metaInfo: String) :
-            this(id, senderID, LocalDateTime.now(), metaInfo)
+    constructor(senderID: UUID, metaInfo: String) :
+            this(UUID.randomUUID(), senderID, LocalDateTime.now(), metaInfo)
 
     override fun asJSON(): String {
         return """

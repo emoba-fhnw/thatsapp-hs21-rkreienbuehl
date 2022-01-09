@@ -21,8 +21,8 @@ class SystemMessageNewUsername(id: UUID, senderID: UUID, username: String, date:
             )
     constructor(id: UUID, senderID: UUID, username: String, date: String, metaInfo: String) :
             this(id, senderID, username, date.dateFromJSON(), metaInfo)
-    constructor(id: UUID, senderID: UUID, username: String, metaInfo: String) :
-            this(id, senderID, username, LocalDateTime.now(), metaInfo)
+    constructor(senderID: UUID, username: String, metaInfo: String) :
+            this(UUID.randomUUID(), senderID, username, LocalDateTime.now(), metaInfo)
 
     override fun asJSON(): String {
         return """

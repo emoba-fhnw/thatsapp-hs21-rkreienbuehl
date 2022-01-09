@@ -21,8 +21,8 @@ class SystemMessageNewProfileImage(id: UUID, senderID: UUID, profileImageLink: S
             )
     constructor(id: UUID, senderID: UUID, profileImageLink: String, date: String, metaInfo: String) :
             this(id, senderID, profileImageLink, date.dateFromJSON(), metaInfo)
-    constructor(id: UUID, senderID: UUID, profileImageLink: String, metaInfo: String) :
-            this(id, senderID, profileImageLink, LocalDateTime.now(), metaInfo)
+    constructor(senderID: UUID, profileImageLink: String, metaInfo: String) :
+            this(UUID.randomUUID(), senderID, profileImageLink, LocalDateTime.now(), metaInfo)
 
     override fun asJSON(): String {
         return """
