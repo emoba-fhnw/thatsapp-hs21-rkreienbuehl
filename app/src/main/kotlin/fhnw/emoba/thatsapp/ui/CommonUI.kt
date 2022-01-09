@@ -1,5 +1,6 @@
 package fhnw.emoba.thatsapp.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -11,7 +12,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import fhnw.emoba.thatsapp.data.Screens
 import fhnw.emoba.thatsapp.model.ThatsAppModel
 import kotlinx.coroutines.launch
@@ -34,16 +37,16 @@ fun MenuIcon(scaffoldState: ScaffoldState){
 }
 
 @Composable
-fun Drawer(model: ThatsAppModel) {
+fun Drawer(model: ThatsAppModel, navController: NavHostController) {
     Column {
         for (screen in Screens.values()) {
-            DrawerRow(model, screen)
+            DrawerRow(model, navController, screen)
         }
     }
 }
 
 @Composable
-private fun DrawerRow(model: ThatsAppModel, screen: Screens) {
+private fun DrawerRow(model: ThatsAppModel, navController: NavHostController, screen: Screens) {
     with(model) {
         var color = if (model.activeScreen == screen) Color.LightGray else Color.White
 
@@ -56,8 +59,20 @@ private fun DrawerRow(model: ThatsAppModel, screen: Screens) {
                 style    = MaterialTheme.typography.h5,
                 modifier = Modifier.padding(5.dp)
                     .fillMaxWidth()
-                    .clickable(onClick = { activeScreen = screen }))
+                    .clickable(onClick = {
+                        activeScreen = screen
+                        navController.navigate(screen.route)
+                    }))
         }
         Divider()
+    }
+}
+
+@Composable
+fun RowImage(image: ImageBitmap?) {
+    if (image == null) {
+        CircularProgressIndicator(modifier = Modifier.fillMaxSize())
+    } else {
+        Image(image!!, "Bild", modifier = Modifier.fillMaxSize())
     }
 }
