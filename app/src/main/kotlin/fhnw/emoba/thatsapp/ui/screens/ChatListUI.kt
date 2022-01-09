@@ -1,112 +1,43 @@
 package fhnw.emoba.thatsapp.ui.screens
 
-import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
-import com.google.accompanist.navigation.animation.AnimatedNavHost
-import com.google.accompanist.navigation.animation.composable
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import androidx.navigation.NavHostController
 import fhnw.emoba.thatsapp.data.ChatInfo
-import fhnw.emoba.thatsapp.data.Screens
 import fhnw.emoba.thatsapp.data.messages.MessageCoordinates
 import fhnw.emoba.thatsapp.data.messages.MessageImage
 import fhnw.emoba.thatsapp.data.messages.MessageText
 import fhnw.emoba.thatsapp.data.toDateString
 import fhnw.emoba.thatsapp.data.toTimeString
 import fhnw.emoba.thatsapp.model.ThatsAppModel
+import fhnw.emoba.thatsapp.ui.DefaultTopBar
 import fhnw.emoba.thatsapp.ui.Drawer
-import fhnw.emoba.thatsapp.ui.MenuIcon
+import fhnw.emoba.thatsapp.ui.RowImage
 
 @ExperimentalAnimationApi
 @Composable
-fun ChatListUI(model: ThatsAppModel) {
+fun ChatListUI(model: ThatsAppModel, navController: NavHostController) {
     val scaffoldState = rememberScaffoldState()
-    val navController = rememberAnimatedNavController()
 
     with(model) {
-        var title = if (isChatDetail) {
-            "test"
-        } else {
-            Screens.CHATS.title
-        }
 
         Scaffold(
             scaffoldState = scaffoldState,
-            topBar = { ChatTopBar(model, title, navController, scaffoldState) },
-            drawerContent = { Drawer(model) }
+            topBar = { DefaultTopBar(title = activeScreen.title, scaffoldState = scaffoldState) },
+            drawerContent = { Drawer(model, navController) }
         ) {
-            AnimatedNavHost(navController, startDestination = "chatList") {
-                composable(
-                    "chatList",
-                    enterTransition = {
-                        when (initialState.destination.route) {
-                            "chat/{chatID}" ->
-                                slideIntoContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(700))
-                            else -> null
-                        }
-                    },
-                    exitTransition = {
-                        when (targetState.destination.route) {
-                            "chat/{chatID}" ->
-                                slideOutOfContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(700))
-                            else -> null
-                        }
-                    }
-                ) { ChatListBody(model, navController) }
-                composable(
-                    "chat/{chatID}",
-                    enterTransition = {
-                        when (initialState.destination.route) {
-                            "chatList" ->
-                                slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(700))
-                            else -> null
-                        }
-                    },
-                    exitTransition = {
-                        when (targetState.destination.route) {
-                            "chatList" ->
-                                slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(700))
-                            else -> null
-                        }
-                    }
-                ) { backStackEntry -> ChatDetailUI(model, backStackEntry.arguments?.getString("chatID")) }
-            }
-        }
-    }
-}
-
-@Composable
-private fun ChatTopBar(model: ThatsAppModel, title: String, navController: NavController, scaffoldState: ScaffoldState) {
-    TopAppBar(
-        title = { Text(title) },
-        navigationIcon = { ChatMenuIcon(model, navController, scaffoldState) }
-    )
-}
-
-@Composable
-private fun ChatMenuIcon(model: ThatsAppModel, navController: NavController, scaffoldState: ScaffoldState) {
-    with(model) {
-        if (isChatDetail) {
-            IconButton(onClick = {
-                navController.navigateUp()
-                isChatDetail = false
-            }) {
-                Icon(Icons.Filled.ArrowBack, "Zurück")
-            }
-        } else {
-            MenuIcon(scaffoldState)
+            ChatListBody(model = model, navController = navController)
         }
     }
 }
@@ -116,7 +47,7 @@ private fun ChatListBody(model: ThatsAppModel, navController: NavController) {
     with(model) {
         Box(modifier = Modifier.fillMaxSize()) {
             LazyColumn {
-                items(chatInfos.sortedBy { it.lastMessage } .reversed()) {
+                items(chatInfos.values.sortedBy { it.lastMessage } .reversed()) {
                     ChatListRow(model, it, navController)
                 }
             }
@@ -136,7 +67,8 @@ private fun ChatListRow(model: ThatsAppModel, chatInfo: ChatInfo, navController:
             })
         ) {
             val (image, text, lastMessageDate, lastMessageTime, lastMessageSender, lastMessage) = createRefs()
-            val chatTitle = chatInfo.members.filter { it != model.ownUser }.map { it.username } .joinToString(", ")
+            val chatTitle =
+                chatInfo.members.filter { it != model.ownUser }.joinToString(", ") { it.username }
 
 
             val lastMsgText = if (chatInfo.messages.size == 0) {
@@ -151,13 +83,28 @@ private fun ChatListRow(model: ThatsAppModel, chatInfo: ChatInfo, navController:
                 }
             }
 
+            Box(modifier = Modifier
+                .constrainAs(image) {
+                    top.linkTo(parent.top, margin = 10.dp)
+                    start.linkTo(parent.start, margin = 10.dp)
+                    bottom.linkTo(parent.bottom, margin = 10.dp)
+                    height = Dimension.fillToConstraints
+                }
+                .width(90.dp)
+                .defaultMinSize(minWidth = 90.dp)) {
+                RowImage(image = chatInfo.chatImage)
+            }
             Text(
                 text = chatTitle,
                 modifier = Modifier.constrainAs(text) {
-                    start.linkTo(parent.start, margin = 10.dp)
+                    start.linkTo(image.end, margin = 10.dp)
                     top.linkTo(parent.top, margin = 10.dp)
+                    end.linkTo(lastMessageDate.start, margin = 10.dp)
+                    width = Dimension.fillToConstraints
                 },
-                style = MaterialTheme.typography.h6
+                style = MaterialTheme.typography.h6,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
             Text(
                 text = chatInfo.lastMessage.toDateString(),
@@ -189,8 +136,12 @@ private fun ChatListRow(model: ThatsAppModel, chatInfo: ChatInfo, navController:
                     top.linkTo(lastMessageSender.bottom)
                     start.linkTo(text.start)
                     bottom.linkTo(parent.bottom, margin = 10.dp)
+                    end.linkTo(parent.end, margin = 10.dp)
+                    width = Dimension.fillToConstraints
                 },
-                style = MaterialTheme.typography.body1
+                style = MaterialTheme.typography.body1,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
         Divider()
