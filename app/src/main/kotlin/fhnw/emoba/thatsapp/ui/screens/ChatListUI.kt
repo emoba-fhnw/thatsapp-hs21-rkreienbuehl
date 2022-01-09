@@ -15,9 +15,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import fhnw.emoba.thatsapp.data.ChatInfo
-import fhnw.emoba.thatsapp.data.messages.MessageCoordinates
-import fhnw.emoba.thatsapp.data.messages.MessageImage
-import fhnw.emoba.thatsapp.data.messages.MessageText
+import fhnw.emoba.thatsapp.data.messages.*
 import fhnw.emoba.thatsapp.data.toDateString
 import fhnw.emoba.thatsapp.data.toTimeString
 import fhnw.emoba.thatsapp.model.ThatsAppModel
@@ -72,13 +70,15 @@ private fun ChatListRow(model: ThatsAppModel, chatInfo: ChatInfo, navController:
 
 
             val lastMsgText = if (chatInfo.messages.size == 0) {
-                "hat neuen Chat erstellt"
+                "hat den Chat erstellt"
             } else {
 
-                when (val lastMsg = chatInfo.messages.last()) {
+                when (val lastMsg = chatInfo.messages.maxByOrNull { it.sendTime }!!) {
                     is MessageText -> lastMsg.data.text
                     is MessageImage -> "hat ein Bild gesendet"
                     is MessageCoordinates -> "hat Standortdaten geteilt"
+                    is SystemMessageNewChat -> "hat den Chat erstellt"
+                    is SystemMessageLeaveChat -> "hat den Chat verlassen"
                     else -> ""
                 }
             }
