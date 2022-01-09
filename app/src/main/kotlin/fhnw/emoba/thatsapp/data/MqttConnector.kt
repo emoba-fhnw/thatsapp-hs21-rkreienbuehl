@@ -79,11 +79,17 @@ class MqttConnector (val mqttBroker: String,
     }
 
     fun publish(message:     Message,
-                subtopic:    String = "",
+                chatID:    String = "",
                 onPublished: () -> Unit = {},
                 onError:     () -> Unit = {},
                 retain:      Boolean = false
     ) {
+        var subtopic = if (chatID == "" || chatID.startsWith("/")) {
+            chatID
+        } else {
+            "/$chatID"
+        }
+
         client.publishWith()
             .topic(maintopic + subtopic)
             .payload(message.asPayload())
