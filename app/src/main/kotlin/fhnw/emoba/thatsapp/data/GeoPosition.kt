@@ -1,4 +1,4 @@
-package fhnw.emoba.modules.module07.gps.data
+package fhnw.emoba.thatsapp.data
 
 import java.util.*
 
