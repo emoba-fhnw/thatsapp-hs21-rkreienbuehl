@@ -89,7 +89,7 @@ private fun ChatListRow(model: ThatsAppModel, chatInfo: ChatInfo, navController:
                 }
                 .width(90.dp)
                 .defaultMinSize(minWidth = 90.dp)) {
-                ImageView(image = chatInfo.chatImage)
+                ImageView(image = chatInfo.chatImage, modifier = Modifier.fillMaxSize())
             }
             Text(
                 text = chatTitle,
