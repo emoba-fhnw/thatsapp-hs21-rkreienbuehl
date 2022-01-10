@@ -21,7 +21,7 @@ import fhnw.emoba.thatsapp.data.toTimeString
 import fhnw.emoba.thatsapp.model.ThatsAppModel
 import fhnw.emoba.thatsapp.ui.DefaultTopBar
 import fhnw.emoba.thatsapp.ui.Drawer
-import fhnw.emoba.thatsapp.ui.RowImage
+import fhnw.emoba.thatsapp.ui.ImageView
 
 @ExperimentalAnimationApi
 @Composable
@@ -92,7 +92,7 @@ private fun ChatListRow(model: ThatsAppModel, chatInfo: ChatInfo, navController:
                 }
                 .width(90.dp)
                 .defaultMinSize(minWidth = 90.dp)) {
-                RowImage(image = chatInfo.chatImage)
+                ImageView(image = chatInfo.chatImage)
             }
             Text(
                 text = chatTitle,
