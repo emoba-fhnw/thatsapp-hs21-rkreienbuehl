@@ -5,6 +5,7 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -13,6 +14,7 @@ import fhnw.emoba.thatsapp.model.ThatsAppModel
 import fhnw.emoba.thatsapp.ui.screens.*
 
 
+@ExperimentalComposeUiApi
 @ExperimentalAnimationApi
 @Composable
 fun AppUI(model : ThatsAppModel) {
