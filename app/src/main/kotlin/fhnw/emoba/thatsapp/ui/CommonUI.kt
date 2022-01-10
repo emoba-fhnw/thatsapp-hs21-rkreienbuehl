@@ -69,9 +69,9 @@ private fun DrawerRow(model: ThatsAppModel, navController: NavHostController, sc
 }
 
 @Composable
-fun RowImage(image: ImageBitmap?) {
+fun ImageView(image: ImageBitmap?) {
     if (image == null) {
-        CircularProgressIndicator(modifier = Modifier.fillMaxSize())
+        CircularProgressIndicator()
     } else {
         Image(image!!, "Bild", modifier = Modifier.fillMaxSize())
     }
