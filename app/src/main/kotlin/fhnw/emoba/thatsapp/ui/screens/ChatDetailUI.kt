@@ -34,8 +34,7 @@ import fhnw.emoba.thatsapp.ui.ImageView
 fun ChatDetailUI(model: ThatsAppModel, navController: NavHostController, chatID: String?) {
 
     with(model) {
-        var chatInfo: ChatInfo? = null
-        if (chatID != null) { chatInfo = chatInfos[chatID] }
+        var chatInfo = chatInfos[chatID]!!
 
         var chatTitle = "Unbekannter Chat"
         if (chatInfo != null) {
@@ -44,7 +43,8 @@ fun ChatDetailUI(model: ThatsAppModel, navController: NavHostController, chatID:
         }
 
         Scaffold(
-            topBar = { ChatTopBar(model, chatTitle, navController) }
+            topBar = { ChatTopBar(model, chatTitle, navController) },
+            bottomBar = { NewMessage(model, chatInfo) }
         ) {
             if (chatInfo == null) {
                 Text(text = "Chat wurde nicht gefunden")
@@ -88,82 +88,73 @@ private fun ChatMessageList(model: ThatsAppModel, chatInfo: ChatInfo) {
                 end.linkTo(parent.end)
                 top.linkTo(parent.top)
             }
-            .padding(bottom = 55.dp)) {
+            .padding(bottom = 65.dp)) {
             LazyColumn {
                 items(chatInfo.messages.sortedBy { it.sendTime }) {
                     ChatMessageRow(model, it)
                 }
             }
-            // Spacer(modifier = Modifier.fillMaxHeight())
         }
 
-        BottomAppBar(modifier = Modifier.constrainAs(newMsg) {
-            bottom.linkTo(parent.bottom)
-            start.linkTo(parent.start)
-            end.linkTo(parent.end)
-        }) {
-            NewMessage(model, chatInfo)
-        }
     }
 }
 
 @ExperimentalComposeUiApi
 @Composable
 private fun NewMessage(model: ThatsAppModel, chatInfo: ChatInfo) {
-    ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
-        val (inputField, sendButton, imageButton, positionButton) = createRefs()
-        var message by remember { mutableStateOf("") }
+    var message by remember { mutableStateOf("") }
 
-        val keyboard = LocalSoftwareKeyboardController.current
+    val keyboard = LocalSoftwareKeyboardController.current
 
-        OutlinedTextField(value = message, onValueChange = {
+    OutlinedTextField(
+        value = message,
+        onValueChange = {
             message = it
-        }, modifier = Modifier.constrainAs(inputField) {
-            top.linkTo(parent.top)
-            start.linkTo(parent.start)
-            end.linkTo(sendButton.start)
         },
-            keyboardOptions = KeyboardOptions(imeAction    = ImeAction.Done,
-                autoCorrect  = false,
-                keyboardType = KeyboardType.Ascii),
-            keyboardActions = KeyboardActions(onDone = {
+        modifier = Modifier.fillMaxWidth().padding(
+            bottom = 5.dp,
+            start = 5.dp,
+            end = 5.dp
+        ),
+        trailingIcon = {
+            Row {
+                IconButton(onClick = {
+                    keyboard?.hide()
+                    model.sendTextMessage(message, chatInfo)
+                    message = ""
+                }) {
+                    Icon(Icons.Filled.Send, contentDescription = "send")
+                }
+
+                PictureButton(model = model, chatInfo = chatInfo)
+
+                IconButton(onClick = {
+                    model.sendPositionMessage(chatInfo)
+                }) {
+                    Icon(Icons.Filled.LocationOn, contentDescription = "send")
+                }
+            }
+        },
+        keyboardOptions = KeyboardOptions(
+            imeAction    = ImeAction.Done,
+            autoCorrect  = false,
+            keyboardType = KeyboardType.Ascii),
+        keyboardActions = KeyboardActions(
+            onDone = {
                 keyboard?.hide()
             })
-        )
-
-        IconButton(onClick = {
-            model.sendTextMessage(message, chatInfo)
-            message = ""
-        }, modifier = Modifier.constrainAs(sendButton) {
-            end.linkTo(imageButton.start)
-        }) {
-            Icon(Icons.Filled.Send, contentDescription = "send")
-        }
-
-        PictureButton(model = model, modifier = Modifier.constrainAs(imageButton) {
-            end.linkTo(positionButton.start)
-        })
-
-        IconButton(onClick = {
-            model.sendPositionMessage(chatInfo)
-        }, modifier = Modifier.constrainAs(positionButton) {
-            end.linkTo(parent.end)
-        }) {
-            Icon(Icons.Filled.LocationOn, contentDescription = "send")
-        }
-    }
+    )
 }
 
 @Composable
-private fun PictureButton(model: ThatsAppModel, modifier: Modifier) {
+private fun PictureButton(model: ThatsAppModel, chatInfo: ChatInfo) {
     with(model) {
         val openDialog = rememberSaveable { mutableStateOf(false) }
 
         IconButton(
             onClick = {
                 takePhoto()
-            },
-            modifier = modifier) {
+            }) {
                 Icon(Icons.Filled.CameraAlt, contentDescription = "picture")
             }
 
@@ -189,6 +180,7 @@ private fun PictureButton(model: ThatsAppModel, modifier: Modifier) {
                     Button(
                         onClick = {
                             photoDialogOpen = false
+                            uploadAndSendImage(chatInfo)
                         }
                     ) {
                         Text("Senden")
