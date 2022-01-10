@@ -13,16 +13,12 @@ class ChatInfo(
     id: UUID,
     chatImageLink: String,
     memberList: List<UserInfo>,
-    messageList: List<Message>,
-    lastMessage: LocalDateTime,
-    lastMessageSender: UserInfo
+    messageList: List<Message>
     ) {
     val id = id
     var chatImageLink by mutableStateOf(chatImageLink)
     var members = mutableStateListOf<UserInfo>()
     var messages = mutableStateListOf<Message>()
-    var lastMessage by mutableStateOf(lastMessage)
-    var lastMessageSender by mutableStateOf(lastMessageSender)
     var isLoading by mutableStateOf(true)
     var chatImage by mutableStateOf<ImageBitmap?>(null)
 

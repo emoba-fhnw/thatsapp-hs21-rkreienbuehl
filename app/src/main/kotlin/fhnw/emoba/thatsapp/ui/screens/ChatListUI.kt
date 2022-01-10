@@ -45,7 +45,7 @@ private fun ChatListBody(model: ThatsAppModel, navController: NavController) {
     with(model) {
         Box(modifier = Modifier.fillMaxSize()) {
             LazyColumn {
-                items(chatInfos.values.sortedBy { it.lastMessage } .reversed()) {
+                items(chatInfos.values.sortedBy { it.messages.sortedBy { it.sendTime } .last().sendTime } .reversed()) {
                     ChatListRow(model, it, navController)
                 }
             }
@@ -68,20 +68,17 @@ private fun ChatListRow(model: ThatsAppModel, chatInfo: ChatInfo, navController:
             val chatTitle =
                 chatInfo.members.filter { it != model.ownUser }.joinToString(", ") { it.username }
 
+            val lastMsg = chatInfo.messages.maxByOrNull { it.sendTime }!!
 
-            val lastMsgText = if (chatInfo.messages.size == 0) {
-                "hat den Chat erstellt"
-            } else {
-
-                when (val lastMsg = chatInfo.messages.maxByOrNull { it.sendTime }!!) {
-                    is MessageText -> lastMsg.data.text
-                    is MessageImage -> "hat ein Bild gesendet"
-                    is MessageCoordinates -> "hat Standortdaten geteilt"
-                    is SystemMessageNewChat -> "hat den Chat erstellt"
-                    is SystemMessageLeaveChat -> "hat den Chat verlassen"
-                    else -> ""
-                }
+            val lastMsgText = when (lastMsg) {
+                is MessageText -> lastMsg.data.text
+                is MessageImage -> "hat ein Bild gesendet"
+                is MessageCoordinates -> "hat Standortdaten geteilt"
+                is SystemMessageNewChat -> "hat den Chat erstellt"
+                is SystemMessageLeaveChat -> "hat den Chat verlassen"
+                else -> ""
             }
+
 
             Box(modifier = Modifier
                 .constrainAs(image) {
@@ -107,7 +104,7 @@ private fun ChatListRow(model: ThatsAppModel, chatInfo: ChatInfo, navController:
                 overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = chatInfo.lastMessage.toDateString(),
+                text = lastMsg.sendTime.toDateString(),
                 modifier = Modifier.constrainAs(lastMessageDate) {
                     end.linkTo(parent.end, margin = 10.dp)
                     top.linkTo(parent.top, margin = 10.dp)
@@ -115,7 +112,7 @@ private fun ChatListRow(model: ThatsAppModel, chatInfo: ChatInfo, navController:
                 style = MaterialTheme.typography.body2
             )
             Text(
-                text = chatInfo.lastMessage.toTimeString(),
+                text = lastMsg.sendTime.toTimeString(),
                 modifier = Modifier.constrainAs(lastMessageTime) {
                     end.linkTo(parent.end, margin = 10.dp)
                     top.linkTo(lastMessageDate.bottom)
@@ -123,7 +120,7 @@ private fun ChatListRow(model: ThatsAppModel, chatInfo: ChatInfo, navController:
                 style = MaterialTheme.typography.body2
             )
             Text(
-                text = "${chatInfo.lastMessageSender.username}:",
+                text = "${userInfos[lastMsg.senderID.toString()]!!.username}:",
                 modifier = Modifier.constrainAs(lastMessageSender) {
                     top.linkTo(lastMessageTime.bottom, margin = 10.dp)
                     start.linkTo(text.start)
