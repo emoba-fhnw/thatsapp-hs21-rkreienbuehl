@@ -1,23 +1,26 @@
 package fhnw.emoba.thatsapp.ui.screens
 
 import androidx.compose.material.Scaffold
+import androidx.compose.material.ScaffoldState
+import androidx.compose.material.Text
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
 import fhnw.emoba.thatsapp.model.ThatsAppModel
 import fhnw.emoba.thatsapp.ui.DefaultTopBar
 import fhnw.emoba.thatsapp.ui.Drawer
 
 @Composable
-fun SettingsUI(model: ThatsAppModel) {
+fun SettingsUI(model: ThatsAppModel, navController: NavHostController) {
     val scaffoldState = rememberScaffoldState()
 
     with(model) {
         Scaffold(
             scaffoldState = scaffoldState,
-            topBar = { DefaultTopBar(activeScreen.title, scaffoldState) },
-            drawerContent = { Drawer(model) }
+            topBar = { DefaultTopBar("Einstellungen", scaffoldState) },
+            drawerContent = { Drawer(model, navController) }
         ) {
-
+            Text("Einstellungen")
         }
     }
 }
