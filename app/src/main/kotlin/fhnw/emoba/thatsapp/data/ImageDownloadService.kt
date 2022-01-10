@@ -9,7 +9,7 @@ import fhnw.emoba.R
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection
 
-class ImageService(val context: Context) {
+class ImageDownloadService(val context: Context) {
     fun loadImage(url: String): ImageBitmap {
         try {
             val url = URL("$url")
