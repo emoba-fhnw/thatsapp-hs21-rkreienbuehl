@@ -45,7 +45,7 @@ class ThatsAppModel(private val imageDownloadService: ImageDownloadService, priv
                 handleIncomingMessage(it)
             },
             onError = {
-                Log.d("ERROR", it.toString())
+                Log.d("ERROR", it.stackTraceToString())
             },
             onConnectionFailed = {
                 Log.d("ERROR", "Connection failed")
@@ -202,7 +202,7 @@ class ThatsAppModel(private val imageDownloadService: ImageDownloadService, priv
                     handleIncomingMessage(it, chatInfo)
                 },
                 onError = {
-                    Log.d("ERROR", it.toString())
+                    Log.d("ERROR", it.stackTraceToString())
                 }
             )
 
