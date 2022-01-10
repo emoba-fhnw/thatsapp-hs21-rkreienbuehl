@@ -1,37 +1,43 @@
 package fhnw.emoba.thatsapp.model
 
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import fhnw.emoba.thatsapp.data.Screens
-import fhnw.emoba.thatsapp.data.ChatInfo
-import fhnw.emoba.thatsapp.data.MqttConnector
-import fhnw.emoba.thatsapp.data.UserInfo
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import fhnw.emoba.thatsapp.data.*
 import fhnw.emoba.thatsapp.data.messages.*
-import java.time.LocalDateTime
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import java.util.*
 
-object ThatsAppModel {
-    var title = "Hello ThatsApp"
+class ThatsAppModel(private val imageDownloadService: ImageDownloadService, private val cameraAppConnector: CameraAppConnector, private val gpsConnector: GPSConnector) {
+    private val modelScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     var activeScreen by mutableStateOf(Screens.CHATS)
     var isChatDetail by mutableStateOf(false)
 
     var ownUser = UserInfo(UUID.fromString("fe79df56-a84b-4029-ae02-bbc08a6e9ed5"), "Roger", "")
 
-    private const val mqttBroker    = "broker.hivemq.com"
-    private const val mainTopic     = "fhnw/emoba/flutterapp"
+    private val mqttBroker = "broker.hivemq.com"
+    private val mainTopic = "fhnw/emoba/flutterapp"
     private val mqttConnector by lazy { MqttConnector(mqttBroker, mainTopic) }
 
-    val chatInfos = mutableStateListOf<ChatInfo>()
+    val chatInfos = mutableStateMapOf<String, ChatInfo>()
     val userInfos = mutableStateMapOf<String, UserInfo>()
+
+    var photo by mutableStateOf<ImageBitmap?>(null)
+    var photoDialogOpen by mutableStateOf(false)
 
     init {
         userInfos[ownUser.id.toString()] = ownUser
     }
 
-    fun connectAndSubscribe(){
+    fun connectAndSubscribe() {
         Log.d("INFO", "Benutzer-ID: ${ownUser.id}")
 
         mqttConnector.connectAndSubscribe(
@@ -48,8 +54,37 @@ object ThatsAppModel {
         )
     }
 
-    fun publish(){
+    fun sendTextMessage(text: String, chatInfo: ChatInfo) {
+        val message = MessageText(ownUser.id, 1, false, text, "")
 
+        mqttConnector.publish(message, chatInfo.id.toString(), onPublished = { chatInfo.messages.add(message) })
+    }
+
+    fun sendPositionMessage(chatInfo: ChatInfo) {
+        gpsConnector.getLocation(
+            onSuccess = {
+                val message = MessageCoordinates(ownUser.id, 1, false, it.latitude, it.longitude, "")
+
+                mqttConnector.publish(message, chatInfo.id.toString(), onPublished = { chatInfo.messages.add(message) })
+            },
+            onFailure = {
+                Log.d("ERROR", it.stackTraceToString())
+            },
+            onPermissionDenied = {
+                Log.d("DEBUG", "Permissions refused")
+            })
+    }
+
+    fun takePhoto() {
+        photo = null
+        cameraAppConnector.getBitmap(
+            onSuccess  = {
+                photo = it.asImageBitmap()
+                photoDialogOpen = true
+            },
+            onCanceled = {
+                Log.d("DEBUG", "Kein neues Bild")
+            })
     }
 
     private fun handleIncomingMessage(message: Message, chatInfo: ChatInfo? = null) {
@@ -66,22 +101,35 @@ object ThatsAppModel {
     }
 
     private fun handleConnect(message: SystemMessageConnect) {
-        val user = userInfos[message.senderID.toString()]
+        var user = userInfos[message.senderID.toString()]
 
         if (user != null) {
             user.username = message.data.username
             user.profileImageLink = message.data.profileImageLink
+            user.isLoading = true
 
-            Log.d("DEBUG", "handleConnect: Daten von Benutzer ${message.data.username} (${message.senderID}) aktualisiert")
+            Log.d(
+                "DEBUG",
+                "handleConnect: Daten von Benutzer ${message.data.username} (${message.senderID}) aktualisiert"
+            )
         } else {
-            userInfos[message.senderID.toString()] =
-                UserInfo(
-                    message.senderID,
-                    message.data.username,
-                    message.data.profileImageLink
-                )
+            user = UserInfo(
+                message.senderID,
+                message.data.username,
+                message.data.profileImageLink
+            )
 
-            Log.d("DEBUG", "handleConnect: Neuen Benutzer ${message.data.username} (${message.senderID}) hinzugefügt")
+            userInfos[message.senderID.toString()] = user
+
+            Log.d(
+                "DEBUG",
+                "handleConnect: Neuen Benutzer ${message.data.username} (${message.senderID}) hinzugefügt"
+            )
+        }
+
+        modelScope.launch {
+            user.userImage = imageDownloadService.loadImage(user.profileImageLink)
+            user.isLoading = false
         }
     }
 
@@ -91,9 +139,15 @@ object ThatsAppModel {
         if (user != null) {
             user.username = message.data.username
 
-            Log.d("DEBUG", "handleNewUsername: Benutzername von ${user.username} (${user.id}) aktualisiert")
+            Log.d(
+                "DEBUG",
+                "handleNewUsername: Benutzername von ${user.username} (${user.id}) aktualisiert"
+            )
         } else {
-            Log.d("ERROR", "handleNewUsername: Benutzer ${message.data.username} (${message.senderID}) nicht bekannt.")
+            Log.d(
+                "ERROR",
+                "handleNewUsername: Benutzer ${message.data.username} (${message.senderID}) nicht bekannt."
+            )
         }
     }
 
@@ -103,7 +157,10 @@ object ThatsAppModel {
         if (user != null) {
             user.profileImageLink = message.data.profileImageLink
 
-            Log.d("DEBUG", "handleNewProfileImage: Profilbild Link von ${user.username} (${user.id}) aktualisiert")
+            Log.d(
+                "DEBUG",
+                "handleNewProfileImage: Profilbild Link von ${user.username} (${user.id}) aktualisiert"
+            )
         } else {
             Log.d("ERROR", "handleNewProfileImage: Benutzer ${message.senderID} nicht bekannt.")
         }
@@ -112,6 +169,13 @@ object ThatsAppModel {
     private fun handleNewChat(message: SystemMessageNewChat) {
         if (message.data.members.contains(ownUser.id.toString())) {
             Log.d("DEBUG", "handleNewChat: Neuer Chat - ID: ${message.data.chatID}")
+
+            val chatID = message.data.chatID.toString()
+
+            if (chatInfos[chatID] != null) {
+                Log.d("ERROR", "Chat mit ID $chatID ist bereits vorhanden")
+                return
+            }
 
             val members = mutableListOf<UserInfo>()
 
@@ -124,10 +188,14 @@ object ThatsAppModel {
                 }
             }
 
-            val chatID = message.data.chatID.toString()
+            val chatInfo = ChatInfo(
+                message.data.chatID,
+                message.data.chatImageLink,
+                members,
+                listOf(message)
+            )
 
-            val chatInfo = ChatInfo(message.data.chatID, message.data.chatImageLink, members, listOf(), LocalDateTime.now(), userInfos[message.senderID.toString()]!!)
-            chatInfos.add(chatInfo)
+            chatInfos[chatID] = chatInfo
 
             mqttConnector.subscribe(chatID,
                 onNewMessage = {
@@ -137,8 +205,18 @@ object ThatsAppModel {
                     Log.d("ERROR", it.toString())
                 }
             )
+
+            modelScope.launch {
+                chatInfo.chatImage = imageDownloadService.loadImage(chatInfo.chatImageLink)
+                chatInfo.isLoading = false
+            }
+
+
         } else {
-            Log.d("DEBUG", "handleNewChat: Neuer Chat - ID: ${message.data.chatID} nicht für eigenen Benutzer")
+            Log.d(
+                "DEBUG",
+                "handleNewChat: Neuer Chat - ID: ${message.data.chatID} nicht für eigenen Benutzer"
+            )
         }
     }
 
@@ -147,9 +225,13 @@ object ThatsAppModel {
         val userInfo = userInfos[userID]
 
         if (userInfo != null && chatInfo != null) {
-            Log.d("DEBUG", "handleLeaveChat: Benutzer ${userInfo.username} hat den Chat verlassen - chatID: ${chatInfo.id}")
+            Log.d(
+                "DEBUG",
+                "handleLeaveChat: Benutzer ${userInfo.username} hat den Chat verlassen - chatID: ${chatInfo.id}"
+            )
 
             chatInfo.members.remove(userInfo)
+
             chatInfo.messages.add(message)
         } else {
             Log.d("ERROR", "handleLeaveChat: Chat oder Benutzer nicht bekannt.")
@@ -161,8 +243,6 @@ object ThatsAppModel {
             Log.d("DEBUG", "Neue Textnachricht auf Chat ${chatInfo.id}")
 
             chatInfo.messages.add(message)
-            chatInfo.lastMessage = message.sendTime
-            chatInfo.lastMessageSender = userInfos[message.senderID.toString()]!!
         } else {
             Log.d("ERROR", "Neue Textnachricht auf falschem Chat")
         }
@@ -174,8 +254,10 @@ object ThatsAppModel {
             Log.d("DEBUG", "Neue Bildnachricht auf Chat ${chatInfo.id}")
 
             chatInfo.messages.add(message)
-            chatInfo.lastMessage = message.sendTime
-            chatInfo.lastMessageSender = userInfos[message.senderID.toString()]!!
+
+            modelScope.launch {
+                message.data.image = imageDownloadService.loadImage(message.data.imageLink)
+            }
         } else {
             Log.d("ERROR", "Neue Bildnachricht auf falschem Chat")
         }
@@ -186,8 +268,6 @@ object ThatsAppModel {
             Log.d("DEBUG", "Neue Koordinatennachricht auf Chat ${chatInfo.id}")
 
             chatInfo.messages.add(message)
-            chatInfo.lastMessage = message.sendTime
-            chatInfo.lastMessageSender = userInfos[message.senderID.toString()]!!
         } else {
             Log.d("ERROR", "Neue Koordinatennachricht auf falschem Chat")
         }
