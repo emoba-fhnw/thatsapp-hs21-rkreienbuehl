@@ -35,6 +35,10 @@ class ThatsAppModel(private val imageDownloadService: ImageDownloadService, priv
 
     init {
         userInfos[ownUser.id.toString()] = ownUser
+
+        modelScope.launch {
+            ownUser.userImage = imageDownloadService.loadImage(ownUser.profileImageLink)
+        }
     }
 
     fun connectAndSubscribe() {
@@ -50,8 +54,17 @@ class ThatsAppModel(private val imageDownloadService: ImageDownloadService, priv
             onConnectionFailed = {
                 Log.d("ERROR", "Connection failed")
                 connectAndSubscribe()
+            },
+            onSubscribeSuccess = {
+                Log.d("DEBUG", "Connection successful")
+                sendConnectMessage()
             }
         )
+    }
+
+    private fun sendConnectMessage() {
+        val message = SystemMessageConnect(ownUser.id, ownUser.username, ownUser.profileImageLink, "")
+        mqttConnector.publish(message, retain = true)
     }
 
     fun sendTextMessage(text: String, chatInfo: ChatInfo) {
@@ -124,6 +137,8 @@ class ThatsAppModel(private val imageDownloadService: ImageDownloadService, priv
         var user = userInfos[message.senderID.toString()]
 
         if (user != null) {
+            if (user == ownUser) return
+
             user.username = message.data.username
             user.profileImageLink = message.data.profileImageLink
             user.isLoading = true

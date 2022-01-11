@@ -35,6 +35,7 @@ class MqttConnector (val mqttBroker: String,
     fun connectAndSubscribe(subtopic:           String = "",
                             onNewMessage:       (Message) -> Unit = {},
                             onError:      (Exception) -> Unit,
+                            onSubscribeSuccess: () -> Unit,
                             onConnectionFailed: () -> Unit = {}) {
         client.connectWith()
             .cleanStart(true)
@@ -44,7 +45,7 @@ class MqttConnector (val mqttBroker: String,
                 if (throwable != null) {
                     onConnectionFailed.invoke()
                 } else {
-                    subscribe(subtopic, onNewMessage, onError)
+                    subscribe(subtopic, onNewMessage, onError, onSubscribeSuccess)
                 }
             }
     }
@@ -52,6 +53,7 @@ class MqttConnector (val mqttBroker: String,
     fun subscribe(chatID:     String = "",
                   onNewMessage: (Message) -> Unit,
                   onError:      (Exception) -> Unit,
+                  onSubscribeSuccess: () -> Unit = {}
     ){
         var subtopic = if (chatID == "" || chatID.startsWith("/")) {
             chatID
@@ -74,6 +76,8 @@ class MqttConnector (val mqttBroker: String,
             .whenComplete { _, throwable ->
                 if (throwable != null) {
                     Log.d("ERROR", throwable.toString())
+                } else {
+                    onSubscribeSuccess.invoke()
                 }
             }
     }
