@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
@@ -71,7 +72,11 @@ private fun DrawerRow(model: ThatsAppModel, navController: NavHostController, sc
 @Composable
 fun ImageView(image: ImageBitmap?, modifier: Modifier) {
     if (image == null) {
-        CircularProgressIndicator()
+        Box(modifier,
+            contentAlignment = Center
+        ) {
+            CircularProgressIndicator()
+        }
     } else {
         Image(image!!, "Bild", modifier = modifier)
     }
