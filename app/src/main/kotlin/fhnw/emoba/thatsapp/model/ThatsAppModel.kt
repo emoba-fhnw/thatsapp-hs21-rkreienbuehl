@@ -64,7 +64,7 @@ class ThatsAppModel(private val imageDownloadService: ImageDownloadService, priv
 
     private fun sendConnectMessage() {
         val message = SystemMessageConnect(ownUser.id, ownUser.username, ownUser.profileImageLink, "")
-        mqttConnector.publish(message, retain = true)
+        mqttConnector.publish(message, retain = true, onPublished = { Log.d("INFO", "Connect wurde versendet") })
     }
 
     fun createNewChat(userList: List<String>, onPublished: (chatID: String) -> Unit) {
