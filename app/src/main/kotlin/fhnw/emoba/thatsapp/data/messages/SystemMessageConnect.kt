@@ -33,8 +33,8 @@ class SystemMessageConnect(id: UUID, senderID: UUID, username: String, profileIm
                 "type": "$type",
                 "subtype": "$subtype",
                 "data": {
-                    "username": ${data.username},
-                    "profileImageLink": ${data.profileImageLink}
+                    "username": "${data.username}",
+                    "profileImageLink": "${data.profileImageLink}"
                 },
                 "sendTime": "${sendTime.toJSONDateString()}",
                 "metaInfo": "$metaInfo"

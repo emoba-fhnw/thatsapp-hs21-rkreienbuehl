@@ -36,9 +36,9 @@ class SystemMessageNewChat(id: UUID, senderID: UUID, chatID: UUID, chatImageLink
                 "type": "$type",
                 "subtype": "$subtype",
                 "data": {
-                    "chatID": ${data.chatID},
-                    "chatImageLink": ${data.chatImageLink},
-                    "members": ${data.members}
+                    "chatID": "${data.chatID}",
+                    "chatImageLink": "${data.chatImageLink}",
+                    "members": "${data.members}"
                 },
                 "sendTime": "${sendTime.toJSONDateString()}",
                 "metaInfo": "$metaInfo"
