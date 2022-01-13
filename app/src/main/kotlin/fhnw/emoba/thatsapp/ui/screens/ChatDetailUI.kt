@@ -244,11 +244,11 @@ private fun MessageRow(model: ThatsAppModel, message: Message) {
         val username = user?.username ?: "Unbekannt"
 
         var arrangement = Arrangement.Start
-        var bgColor = Color.Cyan
+        var bgColor = MaterialTheme.colors.background
 
         if (message.senderID == ownUser.id) {
             arrangement = Arrangement.End
-            bgColor = Color.Green
+            bgColor = MaterialTheme.colors.secondary
         }
 
         Row(modifier = Modifier
