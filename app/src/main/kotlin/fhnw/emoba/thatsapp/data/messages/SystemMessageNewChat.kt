@@ -38,7 +38,7 @@ class SystemMessageNewChat(id: UUID, senderID: UUID, chatID: UUID, chatImageLink
                 "data": {
                     "chatID": "${data.chatID}",
                     "chatImageLink": "${data.chatImageLink}",
-                    "members": "${data.members}"
+                    "members": ${data.members.toJSONArray()}
                 },
                 "sendTime": "${sendTime.toJSONDateString()}",
                 "metaInfo": "$metaInfo"
@@ -51,6 +51,10 @@ class SystemMessageNewChat(id: UUID, senderID: UUID, chatID: UUID, chatImageLink
         var chatImageLink = chatImageLink
         var members = members
     }
+}
+
+private fun List<String>.toJSONArray() : String {
+    return this.joinToString("\", \"", "[\"", "\"]")
 }
 
 private fun JSONArray.parseMembers() : List<String> {
