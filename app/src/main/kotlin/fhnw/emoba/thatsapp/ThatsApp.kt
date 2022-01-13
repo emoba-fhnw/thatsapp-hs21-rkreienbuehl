@@ -20,7 +20,7 @@ object ThatsApp : EmobaApp {
         val cameraAppConnector = CameraAppConnector(activity)
         val gpsConnector = GPSConnector(activity)
 
-        model = ThatsAppModel(imageService, cameraAppConnector, gpsConnector)
+        model = ThatsAppModel(activity, imageService, cameraAppConnector, gpsConnector)
         model.connectAndSubscribe()
     }
 

@@ -1,12 +1,14 @@
 package fhnw.emoba.thatsapp.model
 
 import android.util.Log
+import androidx.activity.ComponentActivity
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.preference.PreferenceManager
 import fhnw.emoba.thatsapp.data.*
 import fhnw.emoba.thatsapp.data.messages.*
 import kotlinx.coroutines.CoroutineScope
@@ -15,17 +17,21 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import java.util.*
 
-class ThatsAppModel(private val imageDownloadService: ImageDownloadService, private val cameraAppConnector: CameraAppConnector, private val gpsConnector: GPSConnector) {
+class ThatsAppModel(private val activity: ComponentActivity, private val imageDownloadService: ImageDownloadService, private val cameraAppConnector: CameraAppConnector, private val gpsConnector: GPSConnector) {
+    private val USER_ID_STRING = "USER-ID"
+    private val USERNAME_STRING = "USERNAME"
+    private val PROFILE_IMAGE_STRING = "PROFILE-IMAGE"
+
+    private val preferences = PreferenceManager.getDefaultSharedPreferences(activity)
+    private val preferencesEditor = preferences.edit()
+
     private val modelScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-
-    var activeScreen by mutableStateOf(Screens.CHATS)
-    var isChatDetail by mutableStateOf(false)
-
-    var ownUser = UserInfo(UUID.fromString("fe79df56-a84b-4029-ae02-bbc08a6e9ed5"), "Roger", "")
 
     private val mqttBroker = "broker.hivemq.com"
     private val mainTopic = "fhnw/emoba/flutterapp"
     private val mqttConnector by lazy { MqttConnector(mqttBroker, mainTopic) }
+
+    var activeScreen by mutableStateOf(Screens.CHATS)
 
     val chatInfos = mutableStateMapOf<String, ChatInfo>()
     val userInfos = mutableStateMapOf<String, UserInfo>()
@@ -33,8 +39,28 @@ class ThatsAppModel(private val imageDownloadService: ImageDownloadService, priv
     var photo by mutableStateOf<ImageBitmap?>(null)
     var photoDialogOpen by mutableStateOf(false)
 
+    var ownUser: UserInfo
+
     init {
-        userInfos[ownUser.id.toString()] = ownUser
+        var id: UUID
+        var userID = preferences.getString(USER_ID_STRING, "")!!
+        val username = preferences.getString(USERNAME_STRING, "ThatsApp User")!!
+        val profileImage = preferences.getString(PROFILE_IMAGE_STRING, "")!!
+
+        if (userID == "") {
+            id = UUID.randomUUID()
+            userID = id.toString()
+
+            preferencesEditor.putString(USER_ID_STRING, userID).apply()
+            preferencesEditor.putString(USERNAME_STRING, username).apply()
+            preferencesEditor.putString(PROFILE_IMAGE_STRING, profileImage).apply()
+        } else {
+            id = UUID.fromString(userID)
+        }
+
+        ownUser = UserInfo(id, username, profileImage)
+
+        userInfos[userID] = ownUser
 
         modelScope.launch {
             ownUser.userImage = imageDownloadService.loadImage(ownUser.profileImageLink)
@@ -68,6 +94,8 @@ class ThatsAppModel(private val imageDownloadService: ImageDownloadService, priv
     }
 
     fun changeUsername(username: String) {
+        preferencesEditor.putString(USERNAME_STRING, username).apply()
+
         ownUser.username = username
         val message = SystemMessageNewUsername(ownUser.id, username, "")
         mqttConnector.publish(message, onPublished = { Log.d("INFO", "Änderung des Usernamens wurde versendet") })
@@ -85,6 +113,8 @@ class ThatsAppModel(private val imageDownloadService: ImageDownloadService, priv
     }
 
     private fun updateProfileImage(image: ImageBitmap, imageLink: String) {
+        preferencesEditor.putString(PROFILE_IMAGE_STRING, imageLink).apply()
+
         ownUser.userImage = image
         ownUser.profileImageLink = imageLink
 
