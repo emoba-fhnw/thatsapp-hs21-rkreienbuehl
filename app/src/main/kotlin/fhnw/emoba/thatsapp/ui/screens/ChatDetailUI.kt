@@ -193,6 +193,7 @@ private fun PictureButton(model: ThatsAppModel, chatInfo: ChatInfo) {
                     Button(
                         onClick = {
                             photoDialogOpen = false
+                            photo = null
                         },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = MaterialTheme.colors.onPrimary
