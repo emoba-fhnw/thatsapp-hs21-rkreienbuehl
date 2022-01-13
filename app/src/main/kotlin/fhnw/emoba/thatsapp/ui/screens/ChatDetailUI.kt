@@ -15,6 +15,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.input.ImeAction
@@ -104,7 +105,7 @@ private fun ChatMessageList(model: ThatsAppModel, chatInfo: ChatInfo) {
 private fun NewMessage(model: ThatsAppModel, chatInfo: ChatInfo) {
     var message by remember { mutableStateOf("") }
 
-    val keyboard = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
 
     OutlinedTextField(
         value = message,
@@ -119,7 +120,7 @@ private fun NewMessage(model: ThatsAppModel, chatInfo: ChatInfo) {
         trailingIcon = {
             Row {
                 IconButton(onClick = {
-                    keyboard?.hide()
+                    focusManager.clearFocus()
                     model.sendTextMessage(message, chatInfo)
                     message = ""
                 }) {
@@ -141,7 +142,9 @@ private fun NewMessage(model: ThatsAppModel, chatInfo: ChatInfo) {
             keyboardType = KeyboardType.Ascii),
         keyboardActions = KeyboardActions(
             onDone = {
-                keyboard?.hide()
+                focusManager.clearFocus()
+                model.sendTextMessage(message, chatInfo)
+                message = ""
             })
     )
 }
