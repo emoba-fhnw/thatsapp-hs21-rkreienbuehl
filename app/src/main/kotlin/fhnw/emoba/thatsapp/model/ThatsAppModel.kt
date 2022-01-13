@@ -67,6 +67,31 @@ class ThatsAppModel(private val imageDownloadService: ImageDownloadService, priv
         mqttConnector.publish(message, retain = true, onPublished = { Log.d("INFO", "Connect wurde versendet") })
     }
 
+    fun changeUsername(username: String) {
+        ownUser.username = username
+        val message = SystemMessageNewUsername(ownUser.id, username, "")
+        mqttConnector.publish(message, onPublished = { Log.d("INFO", "Änderung des Usernamens wurde versendet") })
+    }
+
+    fun changeProfileImage(image: ImageBitmap) {
+        modelScope.launch {
+            uploadBitmap(
+                bitmap = image.asAndroidBitmap(),
+                onSuccess = {
+                    updateProfileImage(image, it)
+                }
+            )
+        }
+    }
+
+    private fun updateProfileImage(image: ImageBitmap, imageLink: String) {
+        ownUser.userImage = image
+        ownUser.profileImageLink = imageLink
+
+        val message = SystemMessageNewProfileImage(ownUser.id, imageLink, "")
+        mqttConnector.publish(message, onPublished = { Log.d("INFO", "Änderung des Profilbildes wurde versendet") })
+    }
+
     fun createNewChat(userList: List<String>, onPublished: (chatID: String) -> Unit) {
         val users = mutableListOf(ownUser.id.toString())
 
@@ -123,6 +148,7 @@ class ThatsAppModel(private val imageDownloadService: ImageDownloadService, priv
                 photo!!.asAndroidBitmap(),
                 onSuccess = {
                     val message = MessageImage(ownUser.id, 1, false, it, "")
+                    photo = null
 
                     mqttConnector.publish(
                         message,
@@ -132,7 +158,10 @@ class ThatsAppModel(private val imageDownloadService: ImageDownloadService, priv
                             message.data.image = imageDownloadService.loadImage(message.data.imageLink)
                         })
                 },
-                onError = { code, msg -> Log.d("ERROR", "$code - Upload fehlgeschlagen: $msg") }
+                onError = { code, msg ->
+                    Log.d("ERROR", "$code - Upload fehlgeschlagen: $msg")
+                    photo = null
+                }
             )
         }
     }
