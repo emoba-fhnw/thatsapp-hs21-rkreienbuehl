@@ -67,6 +67,23 @@ class ThatsAppModel(private val imageDownloadService: ImageDownloadService, priv
         mqttConnector.publish(message, retain = true)
     }
 
+    fun createNewChat(userList: List<String>, onPublished: (chatID: String) -> Unit) {
+        val users = mutableListOf(ownUser.id.toString())
+
+        for (user in userList) {
+            users.add(user)
+        }
+
+        val message = SystemMessageNewChat(ownUser.id, "", users, "")
+
+        mqttConnector.publish(
+            message,
+            onPublished = {
+                handleNewChat(message)
+                onPublished.invoke(message.data.chatID.toString())
+            })
+    }
+
     fun sendTextMessage(text: String, chatInfo: ChatInfo) {
         val message = MessageText(ownUser.id, 1, false, text, "")
 

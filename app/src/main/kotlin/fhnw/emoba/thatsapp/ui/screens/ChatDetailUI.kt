@@ -67,7 +67,7 @@ private fun ChatTopBar(model: ThatsAppModel, title: String, navController: NavHo
 @Composable
 private fun ChatMenuIcon(model: ThatsAppModel, navController: NavHostController) {
     IconButton(onClick = {
-        navController.navigateUp()
+        navController.navigate("chatList")
     }) {
         Icon(Icons.Filled.ArrowBack, "Zurück")
     }
