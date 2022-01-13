@@ -61,7 +61,6 @@ private fun ChatListRow(model: ThatsAppModel, chatInfo: ChatInfo, navController:
             .defaultMinSize(minHeight = 100.dp)
             .clickable(onClick = {
                 navController.navigate("chat/${chatInfo.id}")
-                isChatDetail = true
             })
         ) {
             val (image, text, lastMessageDate, lastMessageTime, lastMessageSender, lastMessage) = createRefs()
