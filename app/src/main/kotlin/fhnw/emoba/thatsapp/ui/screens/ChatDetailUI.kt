@@ -223,7 +223,7 @@ private fun SystemMessageRow(model: ThatsAppModel, message: Message) {
     val username = user?.username ?: "Unbekannt"
 
     val text = when (message) {
-        is SystemMessageNewChat -> "$username hat neuen Chat erstellt"
+        is SystemMessageNewChat -> "$username hat den Chat erstellt"
         is SystemMessageLeaveChat -> "$username hat den Chat verlassen"
         else -> ""
     }
