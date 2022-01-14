@@ -12,8 +12,24 @@
 
 === Herausstellungsmerkmal meiner App
 
-* ...
+* Durchdachte JSON-Struktur, welche Erweiterungen der App einfach zulässt, oder auch einfach zusätzlich erweitert werden kann
 
+==== Mögliche Erweiterungen
+
+* Gruppen-Chat (im JSON vorbereitet, aus Zeitgründen nicht implementiert)
+* Versand von GIF's von einer API (Versand via Link zum Gif als Bild-Nachricht)
+* Selbstlöschende Nachrichten (im JSON vorbereitet, aus Zeitgründen nicht implementiert)
+* Hervorhebung von Nachrichten (im JSON vorbereitet, aus Zeitgründen nicht implementiert)
+* Versand von Dateien (Zusätzlicher Nachrichtentyp im JSON implementieren)
+
+=== Anmerkungen zur Implementierung
+
+* Aufbau der JSON-Struktur im Dokument DATA_README.adoc / DATA_README.pdf beschrieben
+* Bild-Upload auf eigenen Webspace, damit keine Download-Begrenzung besteht (damit Gruppen-Chats möglich sind)
+* AlertView für die Bestätigung des Bildes
+* Wechsel der Views mit Navigation (Animationen mit `accompanist-navigation-animation`)
+* Neue Chats mit einzelnen nBenutzern können via Benutzerliste gestartet werden
+* User Infos werden mit SharedPreferences gespeichert
 
 === Abgabe
 
