@@ -67,6 +67,12 @@ private fun ChatListRow(model: ThatsAppModel, chatInfo: ChatInfo, navController:
             val chatTitle =
                 chatInfo.members.filter { it != model.ownUser }.joinToString(", ") { it.username }
 
+            val imageBitmap = if (chatInfo.imageLoadingFailed && chatInfo.members.size == 2) {
+                chatInfo.members.filter { it != ownUser }.first().userImage
+            } else {
+                chatInfo.chatImage
+            }
+
             val lastMsg = chatInfo.messages.maxByOrNull { it.sendTime }!!
 
             val lastMsgText = when (lastMsg) {
@@ -88,7 +94,7 @@ private fun ChatListRow(model: ThatsAppModel, chatInfo: ChatInfo, navController:
                 }
                 .width(90.dp)
                 .defaultMinSize(minWidth = 90.dp)) {
-                ImageView(image = chatInfo.chatImage, modifier = Modifier.fillMaxSize())
+                ImageView(image = imageBitmap, modifier = Modifier.fillMaxSize())
             }
             Text(
                 text = chatTitle,
