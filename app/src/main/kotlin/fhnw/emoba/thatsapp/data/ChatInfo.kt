@@ -19,7 +19,6 @@ class ChatInfo(
     var chatImageLink by mutableStateOf(chatImageLink)
     var members = mutableStateListOf<UserInfo>()
     var messages = mutableStateListOf<Message>()
-    var isLoading by mutableStateOf(true)
     var chatImage by mutableStateOf<ImageBitmap?>(null)
 
     init {

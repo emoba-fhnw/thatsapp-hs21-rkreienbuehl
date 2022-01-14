@@ -37,6 +37,7 @@ import fhnw.emoba.thatsapp.data.messages.*
 import fhnw.emoba.thatsapp.data.toDateString
 import fhnw.emoba.thatsapp.data.toTimeString
 import fhnw.emoba.thatsapp.model.ThatsAppModel
+import fhnw.emoba.thatsapp.ui.ImageAlert
 import fhnw.emoba.thatsapp.ui.ImageView
 
 @ExperimentalComposeUiApi
@@ -180,58 +181,21 @@ private fun NewMessage(model: ThatsAppModel, chatInfo: ChatInfo) {
                 })
         )
 
-        ImageAlert(model = model, chatInfo = chatInfo)
+        ImageAlert(
+            dialogOpen = photoDialogOpen,
+            photo = photo,
+            onConfirm = {
+                photoDialogOpen = false
+                uploadAndSendImage(chatInfo)
+            },
+            onDismiss = {
+                photoDialogOpen = false
+                photo = null
+            }
+        )
     }
 }
 
-@Composable
-private fun ImageAlert(model: ThatsAppModel, chatInfo: ChatInfo) {
-    with(model) {
-        if (photoDialogOpen) {
-
-            AlertDialog(
-                onDismissRequest = {
-                    // Dismiss the dialog when the user clicks outside the dialog or on the back
-                    // button. If you want to disable that functionality, simply use an empty
-                    // onCloseRequest.
-                    photoDialogOpen = false
-                },
-                title = {
-                    Text(
-                        text = "Bild senden",
-                        style = MaterialTheme.typography.h6
-                    )
-                },
-                text = {
-                    ImageView(image = photo, modifier = Modifier.fillMaxWidth())
-                },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            photoDialogOpen = false
-                            uploadAndSendImage(chatInfo)
-                        }
-                    ) {
-                        Text("Senden")
-                    }
-                },
-                dismissButton = {
-                    Button(
-                        onClick = {
-                            photoDialogOpen = false
-                            photo = null
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = MaterialTheme.colors.onPrimary
-                        )
-                    ) {
-                        Text("Abbrechen")
-                    }
-                }
-            )
-        }
-    }
-}
 
 @Composable
 private fun ChatMessageRow(model: ThatsAppModel, message: Message) {
