@@ -20,6 +20,8 @@
 * Versand von GIF's von einer API (Versand via Link zum Gif als Bild-Nachricht)
 * Selbstlöschende Nachrichten (im JSON vorbereitet, aus Zeitgründen nicht implementiert)
 * Hervorhebung von Nachrichten (im JSON vorbereitet, aus Zeitgründen nicht implementiert)
+* Anzeige in der Chat-Liste, wieviele neue Nachrichten pro Chat verfügbar sind (App-seitig implementierbar)
+* Anzeige einer Karte bei Koordinaten-Nachrichten (App-seitig implementierbar)
 * Versand von Dateien (Zusätzlicher Nachrichtentyp im JSON implementieren)
 
 === Anmerkungen zur Implementierung
