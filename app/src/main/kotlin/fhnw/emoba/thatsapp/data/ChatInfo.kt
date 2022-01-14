@@ -20,6 +20,7 @@ class ChatInfo(
     var members = mutableStateListOf<UserInfo>()
     var messages = mutableStateListOf<Message>()
     var chatImage by mutableStateOf<ImageBitmap?>(null)
+    var imageLoadingFailed by mutableStateOf(false)
 
     init {
         for (member in memberList) {

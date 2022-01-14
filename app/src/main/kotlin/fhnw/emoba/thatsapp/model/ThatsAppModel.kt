@@ -356,9 +356,11 @@ class ThatsAppModel(private val activity: ComponentActivity, private val imageDo
                     chatInfo.chatImageLink,
                     onSuccess = {
                         chatInfo.chatImage = it
+                        chatInfo.imageLoadingFailed = false
                     },
                     onError = {
                         chatInfo.chatImage = it
+                        chatInfo.imageLoadingFailed = true
                     }
                 )
             }
