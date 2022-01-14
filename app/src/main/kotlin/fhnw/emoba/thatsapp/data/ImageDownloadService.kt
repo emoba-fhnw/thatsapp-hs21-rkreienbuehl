@@ -10,7 +10,11 @@ import java.net.URL
 import javax.net.ssl.HttpsURLConnection
 
 class ImageDownloadService(val context: Context) {
-    fun loadImage(url: String): ImageBitmap {
+    fun loadImage(
+        url: String,
+        onSuccess: (ImageBitmap) -> Unit,
+        onError: (ImageBitmap) -> Unit
+    ) {
         try {
             val url = URL("$url")
             val conn = url.openConnection() as HttpsURLConnection
@@ -20,13 +24,16 @@ class ImageDownloadService(val context: Context) {
             val allBytes = inputStream.readBytes()
             inputStream.close()
 
-            val bitmap = BitmapFactory.decodeByteArray(allBytes, 0, allBytes.size)
+            val bitmap = BitmapFactory.decodeByteArray(allBytes, 0, allBytes.size).asImageBitmap()
 
-            return bitmap.asImageBitmap()
+            onSuccess.invoke(bitmap)
+            // return bitmap.asImageBitmap()
         }
         catch (e: Exception) {
             Log.d("ERROR", e.stackTraceToString())
-            return BitmapFactory.decodeResource(context.resources, R.drawable.no_image).asImageBitmap()
+            val bitmap =  BitmapFactory.decodeResource(context.resources, R.drawable.no_image).asImageBitmap()
+
+            onError.invoke(bitmap)
         }
     }
 

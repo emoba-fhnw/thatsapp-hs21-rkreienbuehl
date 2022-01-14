@@ -63,7 +63,15 @@ class ThatsAppModel(private val activity: ComponentActivity, private val imageDo
         userInfos[userID] = ownUser
 
         modelScope.launch {
-            ownUser.userImage = imageDownloadService.loadImage(ownUser.profileImageLink)
+            imageDownloadService.loadImage(
+                ownUser.profileImageLink,
+                onSuccess = {
+                    ownUser.userImage = it
+                },
+                onError = {
+                    ownUser.userImage = it
+                }
+            )
         }
     }
 
@@ -185,7 +193,15 @@ class ThatsAppModel(private val activity: ComponentActivity, private val imageDo
                         chatInfo.id.toString(),
                         onPublished = {
                             chatInfo.messages.add(message)
-                            message.data.image = imageDownloadService.loadImage(message.data.imageLink)
+                            imageDownloadService.loadImage(
+                                message.data.imageLink,
+                                onSuccess = {
+                                    message.data.image = it
+                                },
+                                onError = {
+                                    message.data.image = it
+                                }
+                            )
                         })
                 },
                 onError = { code, msg ->
@@ -238,7 +254,15 @@ class ThatsAppModel(private val activity: ComponentActivity, private val imageDo
         }
 
         modelScope.launch {
-            user.userImage = imageDownloadService.loadImage(user.profileImageLink)
+            imageDownloadService.loadImage(
+                user.profileImageLink,
+                onSuccess = {
+                    user.userImage = it
+                },
+                onError = {
+                    user.userImage = it
+                }
+            )
         }
     }
 
@@ -267,7 +291,15 @@ class ThatsAppModel(private val activity: ComponentActivity, private val imageDo
             user.profileImageLink = message.data.profileImageLink
 
             modelScope.launch {
-                user.userImage = imageDownloadService.loadImage(user.profileImageLink)
+                imageDownloadService.loadImage(
+                    user.profileImageLink,
+                    onSuccess = {
+                        user.userImage = it
+                    },
+                    onError = {
+                        user.userImage = it
+                    }
+                )
             }
 
             Log.d(
@@ -320,7 +352,15 @@ class ThatsAppModel(private val activity: ComponentActivity, private val imageDo
             )
 
             modelScope.launch {
-                chatInfo.chatImage = imageDownloadService.loadImage(chatInfo.chatImageLink)
+                imageDownloadService.loadImage(
+                    chatInfo.chatImageLink,
+                    onSuccess = {
+                        chatInfo.chatImage = it
+                    },
+                    onError = {
+                        chatInfo.chatImage = it
+                    }
+                )
             }
 
 
@@ -368,7 +408,15 @@ class ThatsAppModel(private val activity: ComponentActivity, private val imageDo
             chatInfo.messages.add(message)
 
             modelScope.launch {
-                message.data.image = imageDownloadService.loadImage(message.data.imageLink)
+                imageDownloadService.loadImage(
+                    message.data.imageLink,
+                    onSuccess = {
+                        message.data.image = it
+                    },
+                    onError = {
+                        message.data.image = it
+                    }
+                )
             }
         } else {
             Log.d("ERROR", "Neue Bildnachricht auf falschem Chat")
