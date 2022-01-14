@@ -23,6 +23,7 @@
 * Anzeige in der Chat-Liste, wieviele neue Nachrichten pro Chat verfügbar sind (App-seitig implementierbar)
 * Anzeige einer Karte bei Koordinaten-Nachrichten (App-seitig implementierbar)
 * [.line-through]#Versand von Bildern aus der Galerie (App-seitig implementierbar)# *implementiert*
+* [.line-through]#Auswahl von Bildern aus der Galerie für Profilbild (App-seitig implementierbar)# *implementiert*
 * Versand von Dateien (Zusätzlicher Nachrichtentyp im JSON implementieren)
 
 === Anmerkungen zur Implementierung

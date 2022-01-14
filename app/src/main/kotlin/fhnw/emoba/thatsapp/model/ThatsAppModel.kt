@@ -217,7 +217,6 @@ class ThatsAppModel(private val activity: ComponentActivity, private val imageDo
 
             user.username = message.data.username
             user.profileImageLink = message.data.profileImageLink
-            user.isLoading = true
 
             Log.d(
                 "DEBUG",
@@ -240,7 +239,6 @@ class ThatsAppModel(private val activity: ComponentActivity, private val imageDo
 
         modelScope.launch {
             user.userImage = imageDownloadService.loadImage(user.profileImageLink)
-            user.isLoading = false
         }
     }
 
@@ -267,6 +265,10 @@ class ThatsAppModel(private val activity: ComponentActivity, private val imageDo
 
         if (user != null) {
             user.profileImageLink = message.data.profileImageLink
+
+            modelScope.launch {
+                user.userImage = imageDownloadService.loadImage(user.profileImageLink)
+            }
 
             Log.d(
                 "DEBUG",
@@ -319,7 +321,6 @@ class ThatsAppModel(private val activity: ComponentActivity, private val imageDo
 
             modelScope.launch {
                 chatInfo.chatImage = imageDownloadService.loadImage(chatInfo.chatImageLink)
-                chatInfo.isLoading = false
             }
 
 

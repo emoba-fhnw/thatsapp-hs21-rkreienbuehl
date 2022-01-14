@@ -1,5 +1,8 @@
 package fhnw.emoba.thatsapp.ui.screens
 
+import android.graphics.ImageDecoder
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -7,10 +10,13 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -18,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import fhnw.emoba.thatsapp.model.ThatsAppModel
 import fhnw.emoba.thatsapp.ui.Drawer
+import fhnw.emoba.thatsapp.ui.ImageAlert
 import fhnw.emoba.thatsapp.ui.ImageView
 import fhnw.emoba.thatsapp.ui.MenuIcon
 
@@ -94,6 +101,14 @@ fun SettingsTopBar(title: String, scaffoldState: ScaffoldState, hasChanges: Bool
 @Composable
 private fun SettingsBody(model: ThatsAppModel, username: String, profileImage: ImageBitmap?, onUsernameChange: (String) -> Unit, onProfileImageChanged: () -> Unit) {
     with(model) {
+        val context = LocalContext.current
+
+        val selectImageLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            photo =  ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, uri!!))
+                .asImageBitmap() // MediaStore.Images.Media.getBitmap(context.contentResolver, uri).asImageBitmap()
+            photoDialogOpen = true
+        }
+
         val focusManager = LocalFocusManager.current
 
         Column(
@@ -127,54 +142,33 @@ private fun SettingsBody(model: ThatsAppModel, username: String, profileImage: I
                 ImageView(image = profileImage, modifier = Modifier.fillMaxWidth())
             }
 
-            Button(onClick = { takePhoto() }) {
-                Icon(Icons.Filled.CameraAlt, contentDescription = "picture")
-                Text(text = "Profilbild ändern")
+            Row(modifier = Modifier.padding(5.dp)) {
+                Button(onClick = { takePhoto() }) {
+                    Icon(Icons.Filled.CameraAlt, contentDescription = "picture")
+                    Text(text = "Bild aufnehmen")
+                }
+
+                Spacer(modifier = Modifier.width(10.dp))
+
+                Button(onClick = { selectImageLauncher.launch("image/*") }) {
+                    Icon(Icons.Filled.Image, contentDescription = "picture")
+                    Text(text = "Bild auswählen")
+                }
             }
 
-            if (photoDialogOpen) {
 
-                AlertDialog(
-                    onDismissRequest = {
-                        // Dismiss the dialog when the user clicks outside the dialog or on the back
-                        // button. If you want to disable that functionality, simply use an empty
-                        // onCloseRequest.
-                        photoDialogOpen = false
-                    },
-                    title = {
-                        Text(
-                            text = "Profilbild ändern",
-                            style = MaterialTheme.typography.h6
-                        )
-                    },
-                    text = {
-                        ImageView(image = photo, modifier = Modifier.fillMaxWidth())
-                    },
-                    confirmButton = {
-                        Button(
-                            onClick = {
-                                photoDialogOpen = false
-                                onProfileImageChanged()
-                            }
-                        ) {
-                            Text("Bild verwenden")
-                        }
-                    },
-                    dismissButton = {
-                        Button(
-                            onClick = {
-                                photoDialogOpen = false
-                                photo = null
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                backgroundColor = MaterialTheme.colors.onPrimary
-                            )
-                        ) {
-                            Text("Abbrechen")
-                        }
-                    }
-                )
-            }
+            ImageAlert(
+                dialogOpen = photoDialogOpen,
+                photo = photo,
+                onConfirm = {
+                    photoDialogOpen = false
+                    onProfileImageChanged()
+                },
+                onDismiss = {
+                    photoDialogOpen = false
+                    photo = null
+                }
+            )
         }
     }
 }
