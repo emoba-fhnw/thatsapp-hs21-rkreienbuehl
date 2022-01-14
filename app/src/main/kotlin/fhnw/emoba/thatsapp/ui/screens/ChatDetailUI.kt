@@ -1,5 +1,13 @@
 package fhnw.emoba.thatsapp.ui.screens
 
+import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
+import android.graphics.ImageDecoder.decodeBitmap
+import android.net.Uri
+import android.provider.MediaStore
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts.GetContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,8 +23,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -103,64 +112,81 @@ private fun ChatMessageList(model: ThatsAppModel, chatInfo: ChatInfo) {
 @ExperimentalComposeUiApi
 @Composable
 private fun NewMessage(model: ThatsAppModel, chatInfo: ChatInfo) {
-    var message by remember { mutableStateOf("") }
+    with(model) {
+        var message by remember { mutableStateOf("") }
+        val context = LocalContext.current
 
-    val focusManager = LocalFocusManager.current
+        val selectImageLauncher = rememberLauncherForActivityResult(GetContent()) { uri ->
+            photo =  decodeBitmap(ImageDecoder.createSource(context.contentResolver, uri!!)).asImageBitmap() // MediaStore.Images.Media.getBitmap(context.contentResolver, uri).asImageBitmap()
+            photoDialogOpen = true
+        }
 
-    OutlinedTextField(
-        value = message,
-        onValueChange = {
-            message = it
-        },
-        modifier = Modifier.fillMaxWidth().padding(
-            bottom = 5.dp,
-            start = 5.dp,
-            end = 5.dp
-        ),
-        trailingIcon = {
-            Row {
-                IconButton(onClick = {
+        val focusManager = LocalFocusManager.current
+
+        OutlinedTextField(
+            value = message,
+            onValueChange = {
+                message = it
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    bottom = 5.dp,
+                    start = 5.dp,
+                    end = 5.dp
+                ),
+            trailingIcon = {
+                Row {
+                    IconButton(onClick = {
+                        focusManager.clearFocus()
+                        model.sendTextMessage(message, chatInfo)
+                        message = ""
+                    }) {
+                        Icon(Icons.Filled.Send, contentDescription = "send")
+                    }
+
+                    IconButton(
+                        onClick = {
+                            focusManager.clearFocus()
+                            takePhoto()
+                        }) {
+                        Icon(Icons.Filled.CameraAlt, contentDescription = "picture")
+                    }
+
+                    IconButton(onClick = {
+                        focusManager.clearFocus()
+                        selectImageLauncher.launch("image/*")
+                    }) {
+                        Icon(Icons.Filled.Image, contentDescription = "image")
+                    }
+
+                    IconButton(onClick = {
+                        focusManager.clearFocus()
+                        model.sendPositionMessage(chatInfo)
+                    }) {
+                        Icon(Icons.Filled.LocationOn, contentDescription = "position")
+                    }
+                }
+            },
+            keyboardOptions = KeyboardOptions(
+                imeAction    = ImeAction.Done,
+                autoCorrect  = false,
+                keyboardType = KeyboardType.Ascii),
+            keyboardActions = KeyboardActions(
+                onDone = {
                     focusManager.clearFocus()
                     model.sendTextMessage(message, chatInfo)
                     message = ""
-                }) {
-                    Icon(Icons.Filled.Send, contentDescription = "send")
-                }
+                })
+        )
 
-                PictureButton(model = model, chatInfo = chatInfo)
-
-                IconButton(onClick = {
-                    model.sendPositionMessage(chatInfo)
-                }) {
-                    Icon(Icons.Filled.LocationOn, contentDescription = "send")
-                }
-            }
-        },
-        keyboardOptions = KeyboardOptions(
-            imeAction    = ImeAction.Done,
-            autoCorrect  = false,
-            keyboardType = KeyboardType.Ascii),
-        keyboardActions = KeyboardActions(
-            onDone = {
-                focusManager.clearFocus()
-                model.sendTextMessage(message, chatInfo)
-                message = ""
-            })
-    )
+        ImageAlert(model = model, chatInfo = chatInfo)
+    }
 }
 
 @Composable
-private fun PictureButton(model: ThatsAppModel, chatInfo: ChatInfo) {
+private fun ImageAlert(model: ThatsAppModel, chatInfo: ChatInfo) {
     with(model) {
-        val openDialog = rememberSaveable { mutableStateOf(false) }
-
-        IconButton(
-            onClick = {
-                takePhoto()
-            }) {
-                Icon(Icons.Filled.CameraAlt, contentDescription = "picture")
-            }
-
         if (photoDialogOpen) {
 
             AlertDialog(
@@ -172,7 +198,7 @@ private fun PictureButton(model: ThatsAppModel, chatInfo: ChatInfo) {
                 },
                 title = {
                     Text(
-                        text = "Foto senden",
+                        text = "Bild senden",
                         style = MaterialTheme.typography.h6
                     )
                 },
