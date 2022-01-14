@@ -14,6 +14,5 @@ class UserInfo(
     val id = id
     var username by mutableStateOf(username)
     var profileImageLink by mutableStateOf(profileImageLink)
-    var isLoading by mutableStateOf(true)
     var userImage by mutableStateOf<ImageBitmap?>(null)
 }
