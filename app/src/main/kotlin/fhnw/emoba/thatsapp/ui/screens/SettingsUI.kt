@@ -106,7 +106,7 @@ private fun SettingsBody(model: ThatsAppModel, username: String, profileImage: I
         val selectImageLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
             photo =  ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, uri!!))
                 .asImageBitmap() // MediaStore.Images.Media.getBitmap(context.contentResolver, uri).asImageBitmap()
-            photoDialogOpen = true
+            dialogOpen = true
         }
 
         val focusManager = LocalFocusManager.current
@@ -158,14 +158,14 @@ private fun SettingsBody(model: ThatsAppModel, username: String, profileImage: I
 
 
             ImageAlert(
-                dialogOpen = photoDialogOpen,
+                dialogOpen = dialogOpen,
                 photo = photo,
                 onConfirm = {
-                    photoDialogOpen = false
+                    dialogOpen = false
                     onProfileImageChanged()
                 },
                 onDismiss = {
-                    photoDialogOpen = false
+                    dialogOpen = false
                     photo = null
                 }
             )

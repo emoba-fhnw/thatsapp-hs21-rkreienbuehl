@@ -1,11 +1,7 @@
 package fhnw.emoba.thatsapp.ui.screens
 
-import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.graphics.ImageDecoder.decodeBitmap
-import android.net.Uri
-import android.provider.MediaStore
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.GetContent
 import androidx.compose.foundation.background
@@ -19,7 +15,6 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -119,7 +114,7 @@ private fun NewMessage(model: ThatsAppModel, chatInfo: ChatInfo) {
 
         val selectImageLauncher = rememberLauncherForActivityResult(GetContent()) { uri ->
             photo =  decodeBitmap(ImageDecoder.createSource(context.contentResolver, uri!!)).asImageBitmap() // MediaStore.Images.Media.getBitmap(context.contentResolver, uri).asImageBitmap()
-            photoDialogOpen = true
+            dialogOpen = true
         }
 
         val focusManager = LocalFocusManager.current
@@ -182,14 +177,14 @@ private fun NewMessage(model: ThatsAppModel, chatInfo: ChatInfo) {
         )
 
         ImageAlert(
-            dialogOpen = photoDialogOpen,
+            dialogOpen = dialogOpen,
             photo = photo,
             onConfirm = {
-                photoDialogOpen = false
+                dialogOpen = false
                 uploadAndSendImage(chatInfo)
             },
             onDismiss = {
-                photoDialogOpen = false
+                dialogOpen = false
                 photo = null
             }
         )
