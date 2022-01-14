@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import fhnw.emoba.thatsapp.data.ChatInfo
 import fhnw.emoba.thatsapp.data.Screens
 import fhnw.emoba.thatsapp.model.ThatsAppModel
 import kotlinx.coroutines.launch
@@ -79,5 +80,58 @@ fun ImageView(image: ImageBitmap?, modifier: Modifier) {
         }
     } else {
         Image(image!!, "Bild", modifier = modifier)
+    }
+}
+
+@Composable
+fun ImageAlert(
+    title: String = "Bild verwenden?",
+    dialogOpen: Boolean,
+    photo: ImageBitmap?,
+    confirmBtnText: String = "OK",
+    onConfirm: () -> Unit,
+    dismissBtnText: String = "Abbrechen",
+    onDismiss: () -> Unit
+) {
+    if (dialogOpen) {
+
+        AlertDialog(
+            onDismissRequest = {
+                // Dismiss the dialog when the user clicks outside the dialog or on the back
+                // button. If you want to disable that functionality, simply use an empty
+                // onCloseRequest.
+                onDismiss.invoke()
+            },
+            title = {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.h6
+                )
+            },
+            text = {
+                ImageView(image = photo, modifier = Modifier.fillMaxWidth())
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        onConfirm.invoke()
+                    }
+                ) {
+                    Text(confirmBtnText)
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = {
+                        onDismiss.invoke()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = MaterialTheme.colors.onPrimary
+                    )
+                ) {
+                    Text(dismissBtnText)
+                }
+            }
+        )
     }
 }
