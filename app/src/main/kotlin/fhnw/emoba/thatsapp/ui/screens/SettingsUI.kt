@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
@@ -34,10 +35,10 @@ fun SettingsUI(model: ThatsAppModel, navController: NavHostController) {
         val scaffoldState = rememberScaffoldState()
         val focusManager = LocalFocusManager.current
 
-        var usernameChanged by remember { mutableStateOf(false) }
+        var usernameChanged by rememberSaveable { mutableStateOf(false) }
         var profileImageChanged by remember { mutableStateOf(false) }
 
-        var username by remember { mutableStateOf(ownUser.username) }
+        var username by rememberSaveable { mutableStateOf(ownUser.username) }
         var profileImage by remember { mutableStateOf(ownUser.userImage) }
 
         with(model) {
@@ -104,9 +105,11 @@ private fun SettingsBody(model: ThatsAppModel, username: String, profileImage: I
         val context = LocalContext.current
 
         val selectImageLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-            photo =  ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, uri!!))
-                .asImageBitmap() // MediaStore.Images.Media.getBitmap(context.contentResolver, uri).asImageBitmap()
-            dialogOpen = true
+            if (uri != null) {
+                photo =  ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, uri!!))
+                    .asImageBitmap()
+                dialogOpen = true
+            }
         }
 
         val focusManager = LocalFocusManager.current
