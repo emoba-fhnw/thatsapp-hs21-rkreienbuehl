@@ -37,7 +37,7 @@ class ThatsAppModel(private val activity: ComponentActivity, private val imageDo
     val userInfos = mutableStateMapOf<String, UserInfo>()
 
     var photo by mutableStateOf<ImageBitmap?>(null)
-    var photoDialogOpen by mutableStateOf(false)
+    var dialogOpen by mutableStateOf(false)
 
     var ownUser: UserInfo
 
@@ -73,6 +73,10 @@ class ThatsAppModel(private val activity: ComponentActivity, private val imageDo
                 }
             )
         }
+    }
+
+    fun getDefaultImage(): ImageBitmap {
+        return imageDownloadService.getDefaultImage()
     }
 
     fun connectAndSubscribe() {
@@ -130,14 +134,30 @@ class ThatsAppModel(private val activity: ComponentActivity, private val imageDo
         mqttConnector.publish(message, onPublished = { Log.d("INFO", "Änderung des Profilbildes wurde versendet") })
     }
 
-    fun createNewChat(userList: List<String>, onPublished: (chatID: String) -> Unit) {
+    fun createNewChat(userList: List<String>, chatImage: ImageBitmap? = null, onPublished: (chatID: String) -> Unit) {
         val users = mutableListOf(ownUser.id.toString())
 
         for (user in userList) {
             users.add(user)
         }
 
-        val message = SystemMessageNewChat(ownUser.id, "", users, "")
+        if (chatImage != null) {
+            modelScope.launch {
+                uploadBitmap(
+                    chatImage.asAndroidBitmap(),
+                    onSuccess = {
+                        newChat(users, it, onPublished)
+                    },
+                    onError = { _, _ ->
+                        newChat(users, onPublished = onPublished)
+                    }
+                )
+            }
+        }
+    }
+
+    private fun newChat(userList: List<String>, chatImageLink: String = "", onPublished: (chatID: String) -> Unit) {
+        val message = SystemMessageNewChat(ownUser.id, chatImageLink, userList, "")
 
         mqttConnector.publish(
             message,
@@ -169,11 +189,11 @@ class ThatsAppModel(private val activity: ComponentActivity, private val imageDo
     }
 
     fun takePhoto() {
-        photo = null
+        // photo = null
         cameraAppConnector.getBitmap(
             onSuccess  = {
                 photo = it.asImageBitmap()
-                photoDialogOpen = true
+                dialogOpen = true
             },
             onCanceled = {
                 Log.d("DEBUG", "Kein neues Bild")

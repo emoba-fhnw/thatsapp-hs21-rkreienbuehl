@@ -1,13 +1,24 @@
 package fhnw.emoba.thatsapp.ui.screens
 
+import android.graphics.ImageDecoder
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -15,6 +26,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import fhnw.emoba.thatsapp.data.ChatInfo
+import fhnw.emoba.thatsapp.data.UserInfo
 import fhnw.emoba.thatsapp.data.messages.*
 import fhnw.emoba.thatsapp.data.toDateString
 import fhnw.emoba.thatsapp.data.toTimeString
@@ -22,6 +34,7 @@ import fhnw.emoba.thatsapp.model.ThatsAppModel
 import fhnw.emoba.thatsapp.ui.DefaultTopBar
 import fhnw.emoba.thatsapp.ui.Drawer
 import fhnw.emoba.thatsapp.ui.ImageView
+import fhnw.emoba.thatsapp.ui.MenuIcon
 
 @ExperimentalAnimationApi
 @Composable
@@ -32,11 +45,30 @@ fun ChatListUI(model: ThatsAppModel, navController: NavHostController) {
 
         Scaffold(
             scaffoldState = scaffoldState,
-            topBar = { DefaultTopBar(title = activeScreen.title, scaffoldState = scaffoldState) },
+            topBar = { ChatListTopBar(model = model, title = activeScreen.title, scaffoldState = scaffoldState) },
             drawerContent = { Drawer(model, navController) }
         ) {
             ChatListBody(model = model, navController = navController)
+
+            NewChatAlert(model = model, navController = navController)
         }
+    }
+}
+
+@Composable
+fun ChatListTopBar(model: ThatsAppModel, title: String, scaffoldState: ScaffoldState) {
+    with(model) {
+        TopAppBar(
+            title = { Text(title) },
+            navigationIcon = { MenuIcon(scaffoldState) },
+            actions = {
+                IconButton(
+                    onClick = { dialogOpen = !dialogOpen }
+                ) {
+                    Icon(Icons.Filled.AddCircle, "Neuer Chat")
+                }
+            }
+        )
     }
 }
 
@@ -148,4 +180,150 @@ private fun ChatListRow(model: ThatsAppModel, chatInfo: ChatInfo, navController:
         }
         Divider()
     }
+}
+
+@Composable
+private fun NewChatAlert(model: ThatsAppModel, navController: NavHostController) {
+    with(model) {
+        val userList = mutableSetOf<String>()
+
+        if (dialogOpen) {
+
+            AlertDialog(
+                onDismissRequest = {
+                    // Dismiss the dialog when the user clicks outside the dialog or on the back
+                    // button. If you want to disable that functionality, simply use an empty
+                    // onCloseRequest.
+                    dialogOpen = false
+                    photo = null
+                },
+                title = {
+                    Text(
+                        text = "Neuer Chat",
+                        style = MaterialTheme.typography.h6
+                    )
+                },
+                text = {
+                    NewChatContent(
+                        model = model,
+                        onChange = { checked, userID ->
+                            if (checked) {
+                                userList.add(userID)
+                            } else {
+                                userList.remove(userID)
+                            }
+                        }
+                    )
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            createNewChat(userList.toList(), photo, onPublished = {
+                                dialogOpen = false
+                                photo = null
+                                navController.navigate("chat/$it")
+                            })
+
+                        }
+                    ) {
+                        Text("Chat erstellen")
+                    }
+                },
+                dismissButton = {
+                    Button(
+                        onClick = {
+                            dialogOpen = false
+                            photo = null
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = MaterialTheme.colors.onPrimary
+                        )
+                    ) {
+                        Text("Abbrechen")
+                    }
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun NewChatContent(model: ThatsAppModel, onChange: (Boolean, String) -> Unit) {
+    with(model) {
+        val context = LocalContext.current
+
+        val selectImageLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            if (uri != null) {
+                photo =  ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, uri!!))
+                    .asImageBitmap()
+            }
+        }
+
+        Column {
+            Row {
+                Box(modifier = Modifier
+                    .width(100.dp)
+                    .height(100.dp)) {
+                    if (photo == null) {
+                        ImageView(image = getDefaultImage(), modifier = Modifier.fillMaxSize())
+                    } else {
+                        ImageView(image = photo, modifier = Modifier.fillMaxSize())
+                    }
+                }
+                Spacer(modifier = Modifier.width(10.dp))
+
+                Column {
+                    Button(onClick = { takePhoto() }) {
+                        Icon(Icons.Filled.CameraAlt, contentDescription = "picture")
+                        Text(text = "Bild aufnehmen")
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Button(onClick = { selectImageLauncher.launch("image/*") }) {
+                        Icon(Icons.Filled.Image, contentDescription = "picture")
+                        Text(text = "Bild auswählen")
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Box(modifier = Modifier
+                .border(width = 1.dp, color = Color.Black)
+                .aspectRatio(1f)
+            ) {
+                LazyColumn {
+                    items(
+                        items = userInfos.values.filter { it != ownUser }
+                    ) {
+                        UserRow(
+                            userInfo = it,
+                            onChange = onChange)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun UserRow(userInfo: UserInfo, onChange: (Boolean, String) -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        var checked by remember { mutableStateOf(false) }
+        Checkbox(
+            checked = checked,
+            onCheckedChange = {
+                checked = !checked
+                onChange.invoke(checked, userInfo.id.toString())
+            })
+
+        Spacer(modifier = Modifier.width(10.dp))
+
+        Text(
+            text = userInfo.username,
+            style = MaterialTheme.typography.h6
+        )
+    }
+    Divider()
 }
