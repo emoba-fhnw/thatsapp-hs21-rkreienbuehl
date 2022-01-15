@@ -52,6 +52,24 @@ Der `connect` Sub-Typ meldet eine Anmeldung eines Benutzers. Dabei werden die sp
 * `username`: Name des angemeldeten Benutzers
 * `profileImageLink`: Link zum Profilbild
 
+=== Connect Antworten
+
+Der `answerConnect` Sub-Typ meldet die eigene Anmeldung als Antwort auf eine Anmeldung eines Benutzers. Dabei werden die spezifischen Daten der Grundstruktur wiefolgt gesetzt:
+
+[source,json]
+----
+{
+  "subtype": "answerConnect",
+  "data": {
+    "username": "Samichlaus",
+    "profileImageLink": "www.luegsäuberimInternetnache.ch"
+  }
+}
+----
+
+* `username`: Name des angemeldeten Benutzers
+* `profileImageLink`: Link zum Profilbild
+
 === Neuer Benutzername
 
 Der `newUsername` Sub-Typ meldet die Änderung des Benutzernamens. Dabei werden die spezifischen Daten der Grundstruktur wiefolgt gesetzt:
