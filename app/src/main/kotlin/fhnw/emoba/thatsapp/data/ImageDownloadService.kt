@@ -27,7 +27,6 @@ class ImageDownloadService(val context: Context) {
             val bitmap = BitmapFactory.decodeByteArray(allBytes, 0, allBytes.size).asImageBitmap()
 
             onSuccess.invoke(bitmap)
-            // return bitmap.asImageBitmap()
         }
         catch (e: Exception) {
             Log.d("ERROR", e.stackTraceToString())
