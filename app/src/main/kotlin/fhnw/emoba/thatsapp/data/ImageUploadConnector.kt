@@ -61,7 +61,7 @@ fun uploadBitmap(bitmap:    Bitmap,
             }
         }
         else {
-            return onError.invoke(responseCode, "")
+            onError.invoke(responseCode, "")
         }
     }
 }
