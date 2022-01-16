@@ -10,6 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -76,7 +77,9 @@ fun ChatListTopBar(model: ThatsAppModel, title: String, scaffoldState: ScaffoldS
 private fun ChatListBody(model: ThatsAppModel, navController: NavController) {
     with(model) {
         Box(modifier = Modifier.fillMaxSize()) {
-            LazyColumn {
+            val listState = rememberLazyListState()
+
+            LazyColumn(state = listState) {
                 items(chatInfos.values.sortedBy { it.messages.sortedBy { it.sendTime } .last().sendTime } .reversed()) {
                     ChatListRow(model, it, navController)
                 }
