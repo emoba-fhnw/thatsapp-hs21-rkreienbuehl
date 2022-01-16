@@ -113,8 +113,10 @@ private fun NewMessage(model: ThatsAppModel, chatInfo: ChatInfo) {
         val context = LocalContext.current
 
         val selectImageLauncher = rememberLauncherForActivityResult(GetContent()) { uri ->
-            photo =  decodeBitmap(ImageDecoder.createSource(context.contentResolver, uri!!)).asImageBitmap() // MediaStore.Images.Media.getBitmap(context.contentResolver, uri).asImageBitmap()
-            dialogOpen = true
+            if (uri != null) {
+                photo =  decodeBitmap(ImageDecoder.createSource(context.contentResolver, uri!!)).asImageBitmap()
+                dialogOpen = true
+            }
         }
 
         val focusManager = LocalFocusManager.current
