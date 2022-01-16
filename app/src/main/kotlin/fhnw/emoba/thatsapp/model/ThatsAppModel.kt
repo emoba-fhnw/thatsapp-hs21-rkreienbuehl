@@ -28,7 +28,7 @@ class ThatsAppModel(private val activity: ComponentActivity, private val imageDo
     private val modelScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     private val mqttBroker = "broker.hivemq.com"
-    private val mainTopic = "fhnw/emoba/flutterapp"
+    private val mainTopic = "fhnw/emoba/thatsapp/testrk" // "fhnw/emoba/thatsapp/gruppe42"
     private val mqttConnector by lazy { MqttConnector(mqttBroker, mainTopic) }
 
     var activeScreen by mutableStateOf(Screens.CHATS)
@@ -101,8 +101,8 @@ class ThatsAppModel(private val activity: ComponentActivity, private val imageDo
     }
 
     private fun sendConnectMessage() {
-        val message = SystemMessageConnect(ownUser.id, ownUser.username, ownUser.profileImageLink, "")
-        mqttConnector.publish(message, retain = true, onPublished = { Log.d("INFO", "Connect wurde versendet") })
+        val message = SystemMessageConnect(ownUser.id, ownUser.username, "connect", ownUser.profileImageLink, "")
+        mqttConnector.publish(message, onPublished = { Log.d("INFO", "Connect wurde versendet") })
     }
 
     fun changeUsername(username: String) {
@@ -153,6 +153,8 @@ class ThatsAppModel(private val activity: ComponentActivity, private val imageDo
                     }
                 )
             }
+        } else {
+            newChat(users, onPublished = onPublished)
         }
     }
 
@@ -271,6 +273,11 @@ class ThatsAppModel(private val activity: ComponentActivity, private val imageDo
                 "DEBUG",
                 "handleConnect: Neuen Benutzer ${message.data.username} (${message.senderID}) hinzugefügt"
             )
+        }
+
+        if (message.subtype == "connect") {
+            val message = SystemMessageConnect(ownUser.id, ownUser.username, "answerConnect", ownUser.profileImageLink, "")
+            mqttConnector.publish(message, onPublished = { Log.d("INFO", "answerConnect wurde versendet") })
         }
 
         modelScope.launch {

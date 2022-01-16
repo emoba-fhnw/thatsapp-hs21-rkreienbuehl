@@ -126,6 +126,7 @@ private fun Mqtt5Publish.payloadAsMessage() : Message {
     val subtype = obj.getString("subtype")
     return when {
         type.equals("system") && subtype.equals("connect") -> SystemMessageConnect(obj)
+        type.equals("system") && subtype.equals("answerConnect") -> SystemMessageConnect(obj)
         type.equals("system") && subtype.equals("newUsername") -> SystemMessageNewUsername(obj)
         type.equals("system") && subtype.equals("newProfileImage") -> SystemMessageNewProfileImage(obj)
         type.equals("system") && subtype.equals("newChat") -> SystemMessageNewChat(obj)
