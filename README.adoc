@@ -12,18 +12,18 @@
 
 === Herausstellungsmerkmal meiner App
 
-* Durchdachte JSON-Struktur, welche Erweiterungen der App einfach zulässt, oder auch einfach zusätzlich erweitert werden kann
+* Umfangreiche JSON-Struktur, welche einfach zusätzlich erweitert werden kann, wodurch Erweiterungen der App auf einfache Weise möglich sind
 
 ==== Mögliche Erweiterungen
 
-* [.line-through]#Gruppen-Chat (im JSON vorbereitet, aus Zeitgründen nicht implementiert)# *implementiert*
+* *implementiert:* [.line-through]#Gruppen-Chat (im JSON vorbereitet, aus Zeitgründen nicht implementiert)#
 * Versand von GIF's von einer API (Versand via Link zum Gif als Bild-Nachricht)
 * Selbstlöschende Nachrichten (im JSON vorbereitet)
 * Hervorhebung von Nachrichten (im JSON vorbereitett)
 * Anzeige in der Chat-Liste, wieviele neue Nachrichten pro Chat verfügbar sind (App-seitig implementierbar)
 * Anzeige einer Karte bei Koordinaten-Nachrichten (App-seitig implementierbar)
-* [.line-through]#Versand von Bildern aus der Galerie (App-seitig implementierbar)# *implementiert*
-* [.line-through]#Auswahl von Bildern aus der Galerie für Profilbild (App-seitig implementierbar)# *implementiert*
+* *implementiert:* [.line-through]#Versand von Bildern aus der Galerie (App-seitig implementierbar)#
+* *implementiert:* [.line-through]#Auswahl von Bildern aus der Galerie für Profilbild (App-seitig implementierbar)#
 * Versand von Dateien (Zusätzlicher Nachrichtentyp im JSON implementieren)
 
 === Anmerkungen zur Implementierung
