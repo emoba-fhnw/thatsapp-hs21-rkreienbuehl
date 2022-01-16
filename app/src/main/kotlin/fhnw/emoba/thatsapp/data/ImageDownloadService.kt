@@ -18,6 +18,7 @@ class ImageDownloadService(val context: Context) {
         try {
             val url = URL("$url")
             val conn = url.openConnection() as HttpsURLConnection
+            conn.setRequestProperty("User-Agent", "emoba_ThatsApp")
             conn.connect()
 
             val inputStream = conn.inputStream
