@@ -14,6 +14,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,7 +32,6 @@ import fhnw.emoba.thatsapp.data.messages.*
 import fhnw.emoba.thatsapp.data.toDateString
 import fhnw.emoba.thatsapp.data.toTimeString
 import fhnw.emoba.thatsapp.model.ThatsAppModel
-import fhnw.emoba.thatsapp.ui.DefaultTopBar
 import fhnw.emoba.thatsapp.ui.Drawer
 import fhnw.emoba.thatsapp.ui.ImageView
 import fhnw.emoba.thatsapp.ui.MenuIcon
@@ -185,7 +185,7 @@ private fun ChatListRow(model: ThatsAppModel, chatInfo: ChatInfo, navController:
 @Composable
 private fun NewChatAlert(model: ThatsAppModel, navController: NavHostController) {
     with(model) {
-        val userList = mutableSetOf<String>()
+        val userList = rememberSaveable { mutableSetOf<String>() }
 
         if (dialogOpen) {
 
