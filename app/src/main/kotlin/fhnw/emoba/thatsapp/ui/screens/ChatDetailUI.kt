@@ -9,6 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -95,10 +96,15 @@ private fun ChatMessageList(model: ThatsAppModel, chatInfo: ChatInfo) {
                 top.linkTo(parent.top)
             }
             .padding(bottom = 65.dp)) {
-            LazyColumn {
+            val listState = rememberLazyListState()
+
+            LazyColumn(state = listState) {
                 items(chatInfo.messages.sortedBy { it.sendTime }) {
                     ChatMessageRow(model, it)
                 }
+            }
+            LaunchedEffect(chatInfo.messages.size) {
+                listState.animateScrollToItem(chatInfo.messages.size)
             }
         }
 
