@@ -17,7 +17,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import java.util.*
 
-class ThatsAppModel(private val activity: ComponentActivity, private val imageDownloadService: ImageDownloadService, private val cameraAppConnector: CameraAppConnector, private val gpsConnector: GPSConnector) {
+class ThatsAppModel(activity: ComponentActivity, private val imageDownloadService: ImageDownloadService, private val cameraAppConnector: CameraAppConnector, private val gpsConnector: GPSConnector) {
     private val USER_ID_STRING = "USER-ID"
     private val USERNAME_STRING = "USERNAME"
     private val PROFILE_IMAGE_STRING = "PROFILE-IMAGE"
@@ -28,7 +28,7 @@ class ThatsAppModel(private val activity: ComponentActivity, private val imageDo
     private val modelScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     private val mqttBroker = "broker.hivemq.com"
-    private val mainTopic = "fhnw/emoba/thatsapp/testrk" // "fhnw/emoba/thatsapp/gruppe42"
+    private val mainTopic = "fhnw/emoba/thatsapp/gruppe42"
     private val mqttConnector by lazy { MqttConnector(mqttBroker, mainTopic) }
 
     var activeScreen by mutableStateOf(Screens.CHATS)
@@ -42,7 +42,7 @@ class ThatsAppModel(private val activity: ComponentActivity, private val imageDo
     var ownUser: UserInfo
 
     init {
-        var id: UUID
+        val id: UUID
         var userID = preferences.getString(USER_ID_STRING, "")!!
         val username = preferences.getString(USERNAME_STRING, "ThatsApp User")!!
         val profileImage = preferences.getString(PROFILE_IMAGE_STRING, "")!!
@@ -217,11 +217,11 @@ class ThatsAppModel(private val activity: ComponentActivity, private val imageDo
                             chatInfo.messages.add(message)
                             imageDownloadService.loadImage(
                                 message.data.imageLink,
-                                onSuccess = {
-                                    message.data.image = it
+                                onSuccess = { image ->
+                                    message.data.image = image
                                 },
-                                onError = {
-                                    message.data.image = it
+                                onError = { image ->
+                                    message.data.image = image
                                 }
                             )
                         })
@@ -276,8 +276,8 @@ class ThatsAppModel(private val activity: ComponentActivity, private val imageDo
         }
 
         if (message.subtype == "connect") {
-            val message = SystemMessageConnect(ownUser.id, ownUser.username, "answerConnect", ownUser.profileImageLink, "")
-            mqttConnector.publish(message, onPublished = { Log.d("INFO", "answerConnect wurde versendet") })
+            val msg = SystemMessageConnect(ownUser.id, ownUser.username, "answerConnect", ownUser.profileImageLink, "")
+            mqttConnector.publish(msg, onPublished = { Log.d("INFO", "answerConnect wurde versendet") })
         }
 
         modelScope.launch {
