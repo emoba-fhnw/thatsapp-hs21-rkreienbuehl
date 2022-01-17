@@ -180,7 +180,20 @@ class ThatsAppModel(activity: ComponentActivity, private val imageDownloadServic
             onSuccess = {
                 val message = MessageCoordinates(ownUser.id, 1, false, it.latitude, it.longitude, "")
 
-                mqttConnector.publish(message, chatInfo.id.toString(), onPublished = { chatInfo.messages.add(message) })
+                mqttConnector.publish(message, chatInfo.id.toString(), onPublished = {
+                    chatInfo.messages.add(message)
+
+                    imageDownloadService.loadImage(
+                        message.mapsLink(),
+                        onSuccess = {
+                            Log.d("DEBUG", "$it")
+                            message.data.image = it
+                        },
+                        onError = {
+                            message.data.image = it
+                        }
+                    )
+                })
             },
             onFailure = {
                 Log.d("ERROR", it.stackTraceToString())
