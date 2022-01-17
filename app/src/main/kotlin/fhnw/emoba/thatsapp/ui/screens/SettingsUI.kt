@@ -76,6 +76,7 @@ fun SettingsUI(model: ThatsAppModel, navController: NavHostController) {
                     onProfileImageChanged = {
                         profileImageChanged = true
                         profileImage = photo
+                        photo = null
                     }
                 )
             }
