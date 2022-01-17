@@ -16,14 +16,14 @@
 
 ==== Mögliche Erweiterungen
 
-* *implementiert:* [.line-through]#Gruppen-Chat (im JSON vorbereitet, aus Zeitgründen nicht implementiert)#
+* *implementiert:* [.line-through]#_Gruppen-Chat (im JSON vorbereitet, aus Zeitgründen nicht implementiert)_#
 * Versand von GIF's von einer API (Versand via Link zum Gif als Bild-Nachricht)
 * Selbstlöschende Nachrichten (im JSON vorbereitet)
 * Hervorhebung von Nachrichten (im JSON vorbereitett)
-* *implementiert:* [.line-through]#Anzeige in der Chat-Liste, wieviele neue Nachrichten pro Chat verfügbar sind (App-seitig implementierbar)#
+* *implementiert:* [.line-through]#_Anzeige in der Chat-Liste, wieviele neue Nachrichten pro Chat verfügbar sind (App-seitig implementierbar)_#
 * Anzeige einer Karte bei Koordinaten-Nachrichten (App-seitig implementierbar)
-* *implementiert:* [.line-through]#Versand von Bildern aus der Galerie (App-seitig implementierbar)#
-* *implementiert:* [.line-through]#Auswahl von Bildern aus der Galerie für Profilbild (App-seitig implementierbar)#
+* *implementiert:* [.line-through]#_Versand von Bildern aus der Galerie (App-seitig implementierbar)_#
+* *implementiert:* [.line-through]#_Auswahl von Bildern aus der Galerie für Profilbild (App-seitig implementierbar)_#
 * Versand von Dateien (Zusätzlicher Nachrichtentyp im JSON implementieren)
 
 === Anmerkungen zur Implementierung
