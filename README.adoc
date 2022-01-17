@@ -20,7 +20,7 @@
 * Versand von GIF's von einer API (Versand via Link zum Gif als Bild-Nachricht)
 * Selbstlöschende Nachrichten (im JSON vorbereitet)
 * Hervorhebung von Nachrichten (im JSON vorbereitett)
-* Anzeige in der Chat-Liste, wieviele neue Nachrichten pro Chat verfügbar sind (App-seitig implementierbar)
+* *implementiert:* [.line-through]#Anzeige in der Chat-Liste, wieviele neue Nachrichten pro Chat verfügbar sind (App-seitig implementierbar)#
 * Anzeige einer Karte bei Koordinaten-Nachrichten (App-seitig implementierbar)
 * *implementiert:* [.line-through]#Versand von Bildern aus der Galerie (App-seitig implementierbar)#
 * *implementiert:* [.line-through]#Auswahl von Bildern aus der Galerie für Profilbild (App-seitig implementierbar)#
