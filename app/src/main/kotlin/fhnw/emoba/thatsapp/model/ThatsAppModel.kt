@@ -457,6 +457,20 @@ class ThatsAppModel(activity: ComponentActivity, private val imageDownloadServic
             Log.d("DEBUG", "Neue Koordinatennachricht auf Chat ${chatInfo.id}")
 
             chatInfo.messages.add(message)
+
+            modelScope.launch {
+                Log.d("DEBUG", message.mapsLink())
+                imageDownloadService.loadImage(
+                    message.mapsLink(),
+                    onSuccess = {
+                        Log.d("DEBUG", "$it")
+                        message.data.image = it
+                    },
+                    onError = {
+                        message.data.image = it
+                    }
+                )
+            }
         } else {
             Log.d("ERROR", "Neue Koordinatennachricht auf falschem Chat")
         }

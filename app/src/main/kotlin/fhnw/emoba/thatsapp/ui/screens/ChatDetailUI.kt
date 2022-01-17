@@ -295,10 +295,14 @@ private fun MessageRow(model: ThatsAppModel, message: Message) {
 private fun Coordinates(message: MessageCoordinates) {
     val uriHandler = LocalUriHandler.current
 
-    Row {
-        Icon(Icons.Filled.LocationOn, "")
-        Text(text = message.data.geoCoordinates.dms(), modifier = Modifier.clickable {
-            uriHandler.openUri(message.data.geoCoordinates.asGoogleMapsURL())
-        })
+    Column {
+        ImageView(image = message.data.image, modifier = Modifier.fillMaxWidth())
+        Row {
+            Icon(Icons.Filled.LocationOn, "")
+            Text(text = message.data.geoCoordinates.dms(), modifier = Modifier.clickable {
+                uriHandler.openUri(message.data.geoCoordinates.asGoogleMapsURL())
+            })
+        }
     }
+
 }

@@ -1,5 +1,9 @@
 package fhnw.emoba.thatsapp.data.messages
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.ImageBitmap
 import fhnw.emoba.thatsapp.data.GeoPosition
 import fhnw.emoba.thatsapp.data.dateFromJSON
 import fhnw.emoba.thatsapp.data.toJSONDateString
@@ -54,6 +58,11 @@ class MessageCoordinates(id: UUID, senderID: UUID, priority: Int, deletingItself
         var deletingItself = deletingItself
         var lat = lat
         var lon = lon
-        var geoCoordinates = GeoPosition(lon, lat, 0.0);
+        var geoCoordinates = GeoPosition(lon, lat, 0.0)
+        var image by mutableStateOf<ImageBitmap?>(null)
+    }
+
+    fun mapsLink(): String {
+        return "https://maps.googleapis.com/maps/api/staticmap?center=${data.lat},${data.lon}&zoom=14&size=400x400&scale=2&markers=color:red|${data.lat},${data.lon}&key=AIzaSyBld5kg_sRVjEZprODY8mNWgmu98goMzpk"
     }
 }

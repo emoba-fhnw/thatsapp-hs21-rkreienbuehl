@@ -21,7 +21,7 @@
 * Selbstlöschende Nachrichten (im JSON vorbereitet)
 * Hervorhebung von Nachrichten (im JSON vorbereitett)
 * *implementiert:* [.line-through]#_Anzeige in der Chat-Liste, wieviele neue Nachrichten pro Chat verfügbar sind (App-seitig implementierbar)_#
-* Anzeige einer Karte bei Koordinaten-Nachrichten (App-seitig implementierbar)
+* *implementiert:* [.line-through]#_Anzeige einer Karte bei Koordinaten-Nachrichten (App-seitig implementierbar)_#
 * *implementiert:* [.line-through]#_Versand von Bildern aus der Galerie (App-seitig implementierbar)_#
 * *implementiert:* [.line-through]#_Auswahl von Bildern aus der Galerie für Profilbild (App-seitig implementierbar)_#
 * Versand von Dateien (Zusätzlicher Nachrichtentyp im JSON implementieren)
