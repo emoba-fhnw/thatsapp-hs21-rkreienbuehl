@@ -25,6 +25,7 @@
 * *implementiert:* [.line-through]#_Versand von Bildern aus der Galerie (App-seitig implementierbar)_#
 * *implementiert:* [.line-through]#_Auswahl von Bildern aus der Galerie für Profilbild (App-seitig implementierbar)_#
 * Versand von Dateien (Zusätzlicher Nachrichtentyp im JSON implementieren)
+* Speicherung der User, Chats und Nachrichten in einem DataStore, z.B. mit https://cashapp.github.io/sqldelight/[SQDDelight] (App-seitig implementierbar)
 
 === Anmerkungen zur Implementierung
 
