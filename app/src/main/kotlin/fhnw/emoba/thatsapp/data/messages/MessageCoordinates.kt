@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 import java.util.*
 
 class MessageCoordinates(id: UUID, senderID: UUID, priority: Int, deletingItself: Boolean, lat: Double, lon: Double, date: LocalDateTime, metaInfo: String) :
-    Message(id, senderID, date, metaInfo) {
+    Message(id, senderID, date, metaInfo, false) {
 
     override var type = "message"
     override var subtype = "coordinates"

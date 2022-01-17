@@ -98,7 +98,7 @@ private fun ChatListRow(model: ThatsAppModel, chatInfo: ChatInfo, navController:
                 navController.navigate("chat/${chatInfo.id}")
             })
         ) {
-            val (image, text, lastMessageDate, lastMessageTime, lastMessageSender, lastMessage) = createRefs()
+            val (badge, image, text, lastMessageDate, lastMessageTime, lastMessageSender, lastMessage) = createRefs()
             val chatTitle =
                 chatInfo.members.filter { it != model.ownUser }.joinToString(", ") { it.username }
 
@@ -118,7 +118,6 @@ private fun ChatListRow(model: ThatsAppModel, chatInfo: ChatInfo, navController:
                 is SystemMessageLeaveChat -> "hat den Chat verlassen"
                 else -> ""
             }
-
 
             Box(modifier = Modifier
                 .constrainAs(image) {
@@ -180,6 +179,15 @@ private fun ChatListRow(model: ThatsAppModel, chatInfo: ChatInfo, navController:
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
+
+            if (chatInfo.unreadMessages() != 0) {
+                Badge(modifier = Modifier.constrainAs(badge) {
+                    top.linkTo(parent.top, margin = 10.dp)
+                    start.linkTo(parent.start, margin = 90.dp)
+                }) {
+                    Text(text = "${chatInfo.unreadMessages()}")
+                }
+            }
         }
         Divider()
     }

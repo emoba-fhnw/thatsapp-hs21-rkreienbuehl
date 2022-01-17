@@ -31,4 +31,12 @@ class ChatInfo(
             messages.add(message)
         }
     }
+
+    fun unreadMessages(): Int {
+        return messages.filter { !it.read } .count()
+    }
+
+    fun markAsRead() {
+        messages.filter { !it.read } .forEach { it.read = true }
+    }
 }

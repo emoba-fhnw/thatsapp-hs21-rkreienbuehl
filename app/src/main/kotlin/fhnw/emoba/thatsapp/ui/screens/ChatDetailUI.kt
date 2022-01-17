@@ -105,6 +105,7 @@ private fun ChatMessageList(model: ThatsAppModel, chatInfo: ChatInfo) {
             }
             LaunchedEffect(chatInfo.messages.size) {
                 listState.animateScrollToItem(chatInfo.messages.size)
+                chatInfo.markAsRead()
             }
         }
 

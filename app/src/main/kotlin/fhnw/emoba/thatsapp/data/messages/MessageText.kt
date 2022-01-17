@@ -6,7 +6,7 @@ import org.json.JSONObject
 import java.time.LocalDateTime
 import java.util.*
 
-class MessageText(id: UUID, senderID: UUID, priority: Int, deletingItself: Boolean, text: String, date: LocalDateTime, metaInfo: String) : Message(id, senderID, date, metaInfo) {
+class MessageText(id: UUID, senderID: UUID, priority: Int, deletingItself: Boolean, text: String, date: LocalDateTime, metaInfo: String) : Message(id, senderID, date, metaInfo, false) {
     override var type = "message"
     override var subtype = "text"
     var data = TextData(priority, deletingItself, text)

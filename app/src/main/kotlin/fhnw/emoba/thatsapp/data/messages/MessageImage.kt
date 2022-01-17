@@ -10,7 +10,7 @@ import org.json.JSONObject
 import java.time.LocalDateTime
 import java.util.*
 
-class MessageImage(id: UUID, senderID: UUID, priority: Int, deletingItself: Boolean, imageLink: String, date: LocalDateTime, metaInfo: String) : Message(id, senderID, date, metaInfo) {
+class MessageImage(id: UUID, senderID: UUID, priority: Int, deletingItself: Boolean, imageLink: String, date: LocalDateTime, metaInfo: String) : Message(id, senderID, date, metaInfo, false) {
     override var type = "message"
     override var subtype = "image"
     var data = ImageData(priority, deletingItself, imageLink)
